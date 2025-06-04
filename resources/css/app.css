@@ -1,0 +1,2312 @@
+@import "tailwindcss";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+/* Basic Reset & Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #f4f7f6; /* A very light, slightly cool grey */
+    color: #333;
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Color Variables */
+:root {
+    --primary-color: #ffffff;
+    --complementary-color: #d57a66; /* Terracotta */
+    --complementary-hover: #c06c56; /* Darker terracotta for hover */
+    --text-dark: #2c3e50;
+    --text-light: #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.12);
+    --accent-gradient: linear-gradient(45deg, #d57a66, #e08f7d);
+    --complementary-color-light: #e08f7d; /* Lighter terracotta for chart elements */
+    --complementary-color-dark: #c06c56; /* Darker terracotta for chart elements */
+    --neutral-light-gray: #e9ecef; /* For chart backgrounds or axes */
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 50px;
+    box-shadow: 0 5px 15px var(--shadow-light);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 5px solid transparent; /* Prepare for gradient border */
+    border-image: var(--accent-gradient) 1;
+    animation: fadeInDown 0.5s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Brand/Logo */
+.navbar-brand .logo {
+    text-decoration: none;
+    font-size: 2.5em; /* Increased size */
+    font-weight: 700;
+    color: var(--text-dark);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Elastic transform */
+    display: inline-block; /* For transform to work correctly */
+}
+
+.navbar-brand .logo:hover {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+.navbar-brand .logo-accent {
+    font-family: "Pacifico", cursive; /* A script font for "day" */
+    color: var(--complementary-color);
+    font-weight: 400; /* Pacifico is inherently bold */
+    margin-left: -5px; /* Slightly kern */
+    position: relative;
+}
+
+/* Creative underline for the accent part */
+.navbar-brand .logo-accent::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 3px;
+    background: var(--complementary-hover);
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: width 0.4s ease-out;
+    border-radius: 2px;
+}
+
+.navbar-brand .logo:hover .logo-accent::after {
+    width: 110%; /* Slightly wider than the text */
+}
+
+/* Navigation Links */
+.navbar-nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-nav li {
+    margin-left: 30px; /* Increased spacing */
+}
+
+.navbar-nav .nav-link {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 1.1em;
+    font-weight: 600; /* Bolder links */
+    padding: 10px 0px; /* Only vertical padding, underline will define horizontal extent */
+    position: relative;
+    transition: color 0.3s ease;
+    overflow: hidden;
+}
+
+/* Eye-catching underline effect */
+.navbar-nav .nav-link::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--complementary-color);
+    visibility: hidden;
+    transform: scaleX(0);
+    transition: all 0.3s ease-in-out;
+    border-radius: 2px;
+}
+
+.navbar-nav .nav-link:hover::before,
+.navbar-nav .nav-link.active::before {
+    visibility: visible;
+    transform: scaleX(1);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--complementary-color);
+}
+
+/* Special styling for "Add New" button */
+.navbar-nav .nav-link[data-section="add"] {
+    background: var(--accent-gradient);
+    color: var(--text-light);
+    padding: 8px 20px;
+    border-radius: 50px; /* Pill shape */
+    box-shadow: 0 3px 8px rgba(213, 122, 102, 0.4);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+        background-color 0.3s ease;
+}
+
+.navbar-nav .nav-link[data-section="add"]::before {
+    display: none; /* No underline for this button */
+}
+
+.navbar-nav .nav-link[data-section="add"]:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 5px 12px rgba(213, 122, 102, 0.5);
+    color: var(--text-light); /* Keep text light on hover */
+}
+.navbar-nav .nav-link[data-section="add"].active {
+    /* Keep active state consistent */
+    background: var(--accent-gradient);
+    color: var(--text-light);
+}
+
+/* Navbar Extra - e.g., theme toggle */
+.navbar-extra .theme-toggle {
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.navbar-extra .theme-toggle:hover {
+    background-color: #e0e0e0;
+    transform: rotate(15deg);
+}
+
+/* Dark mode (optional, simple example) */
+body.dark-mode {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+}
+body.dark-mode .navbar {
+    background-color: #34495e;
+    border-image: linear-gradient(45deg, #d57a66, #e08f7d) 1;
+}
+body.dark-mode .navbar-brand .logo {
+    color: #ecf0f1;
+}
+body.dark-mode .navbar-nav .nav-link {
+    color: #bdc3c7;
+}
+body.dark-mode .navbar-nav .nav-link:hover,
+body.dark-mode .navbar-nav .nav-link.active {
+    color: var(--complementary-color);
+}
+body.dark-mode .navbar-nav .nav-link[data-section="add"] {
+    /* Keep the button bright */
+    color: var(--text-light);
+}
+body.dark-mode .navbar-extra .theme-toggle:hover {
+    background-color: #4a6278;
+}
+body.dark-mode main h1 {
+    color: var(--complementary-color);
+}
+
+body.dark-mode .hero-section {
+    background-color: #34495e;
+    border-bottom: 1px solid #4a6278;
+}
+
+body.dark-mode .hero-title {
+    color: #ecf0f1;
+}
+
+body.dark-mode .hero-subtitle {
+    color: #bdc3c7;
+}
+
+body.dark-mode .orbiting-dot {
+    background-color: var(--complementary-color);
+    opacity: 0.9; /* Default for dark mode, can be overridden by inline style on path */
+    box-shadow: 0 0 10px rgba(213, 122, 102, 0.6);
+}
+
+body.dark-mode .cta-button {
+    color: var(--text-light);
+}
+body.dark-mode .cta-button:hover {
+    color: var(--text-light);
+}
+
+body.dark-mode .site-footer {
+    background-color: #232a31; /* A dark shade for the footer */
+    color: #adb5bd; /* Lighter text for dark mode */
+    border-top: 1px solid #343a40; /* Darker border */
+}
+
+/* Generic card/block background and shadow for dark mode */
+body.dark-mode .benefit-card,
+body.dark-mode .metric-item,
+body.dark-mode .chart-card,
+body.dark-mode .about-block {
+    background-color: #3b536a; /* A bit lighter than section bg for contrast */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); /* Adjusted shadow for dark bg */
+    /* If you prefer a light border instead of shadow, or in addition: */
+    /* border: 1px solid #4a6075; */
+}
+
+/* Generic icon color (if not already using accent) */
+body.dark-mode .benefit-icon svg,
+body.dark-mode .metric-icon svg,
+body.dark-mode .about-icon svg {
+    /* Accent color is usually fine, but if needed: */
+    /* color: var(--complementary-color); */
+}
+
+body.dark-mode .section-subtitle {
+    color: #bdc3c7;
+}
+
+/* --- Why Us Section Dark Mode --- */
+body.dark-mode .why-us-section {
+    background-color: #34495e; /* Dark section background */
+    border-top-color: #4a6075; /* Darker border */
+}
+/* .why-us-logo-accent (var(--complementary-color)) fine */
+
+body.dark-mode .benefit-card .benefit-title {
+    color: #ecf0f1;
+}
+
+body.dark-mode .benefit-card .benefit-description {
+    color: #bdc3c7;
+}
+
+/* --- Stats Section Dark Mode --- */
+body.dark-mode .stats-section {
+    background-color: #34495e; /* Dark section background */
+    border-top-color: #4a6075; /* Darker border */
+}
+/* .stats-title-accent (var(--complementary-color)) fine */
+
+body.dark-mode .metric-item .metric-value {
+    color: #ecf0f1;
+}
+
+body.dark-mode .metric-item .metric-label {
+    color: #bdc3c7;
+}
+
+body.dark-mode .chart-card .chart-title {
+    color: #ecf0f1;
+}
+
+body.dark-mode .chart-placeholder {
+    background-color: #2c3e50; /* Darker area for chart itself, like body bg */
+}
+
+body.dark-mode .simple-bar-chart .bar::after {
+    /* Bar data labels */
+    color: #adb5bd; /* Lighter grey */
+}
+
+body.dark-mode .svg-bar-chart line {
+    /* Axes lines */
+    stroke: #566573; /* Dark mode axis color */
+}
+
+body.dark-mode .svg-bar-chart text {
+    /* Axis/bar labels */
+    fill: #adb5bd;
+}
+
+/* --- About Section Dark Mode --- */
+body.dark-mode .about-section {
+    background-color: #34495e; /* Dark section background */
+    border-top-color: #4a6075; /* Darker border */
+}
+/* .about-title-accent (var(--complementary-color)) fine */
+
+body.dark-mode .about-block .about-block-title {
+    color: #ecf0f1;
+}
+
+body.dark-mode .about-block .motto-statement {
+    color: #ecf0f1;
+}
+/* .motto-statement .hero-title-accent (var(--complementary-color)) fine */
+
+body.dark-mode .about-block .about-block-description {
+    color: #bdc3c7;
+}
+
+body.dark-mode .about-list li {
+    color: #bdc3c7;
+}
+/* .about-list li::before (var(--complementary-color)) for checkmark fine */
+
+/* Heart color remains the same in dark mode as it's an accent */
+body.dark-mode .footer-heart {
+    color: var(--complementary-color);
+}
+
+body.dark-mode .login-page-body {
+    background-color: #232b30; /* Darker than navbar dark */
+    /* background: linear-gradient(135deg, #2c3e50 0%, #232b30 100%); */
+}
+
+body.dark-mode .login-card {
+    background-color: #34495e; /* Consistent with navbar dark */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .login-header .login-logo,
+body.dark-mode .login-header h2 {
+    color: #ecf0f1;
+}
+
+body.dark-mode .login-header p,
+body.dark-mode .login-form .form-group label,
+body.dark-mode .form-options .remember-me,
+body.dark-mode .login-footer {
+    color: #bdc3c7;
+}
+
+body.dark-mode .login-form .form-group input {
+    color: #ecf0f1;
+    border-bottom-color: #566573;
+}
+
+body.dark-mode .login-form .form-group input:focus,
+body.dark-mode .login-form .form-group input:valid {
+    border-bottom-color: var(--complementary-color);
+}
+
+body.dark-mode .login-form .form-group input:focus + label,
+body.dark-mode .login-form .form-group input:valid + label {
+    color: var(--complementary-color);
+}
+body.dark-mode .login-form .form-group .icon {
+    color: #7f8c8d;
+}
+body.dark-mode .login-form .form-group input:focus + label .icon,
+body.dark-mode .login-form .form-group input:valid + label .icon {
+    color: var(--complementary-color);
+}
+
+/* Dark Mode Styles for Tasks Page */
+body.dark-mode .tasks-page-content-wrapper {
+    background-color: #34495e; /* Consistent with dark navbar */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .tasks-page-header {
+    border-bottom-color: #4a6278;
+}
+
+body.dark-mode .tasks-page-title {
+    color: #ecf0f1;
+}
+/* .tasks-page-title-accent color remains var(--complementary-color) */
+
+body.dark-mode .tasks-page-subtitle {
+    color: #bdc3c7;
+}
+
+body.dark-mode .tasks-input-field {
+    background-color: #2c3e50; /* Darker input bg */
+    color: #ecf0f1;
+    border-color: #4a6278;
+}
+body.dark-mode .tasks-input-field::placeholder {
+    color: #7f8c8d;
+}
+body.dark-mode .tasks-input-field:focus {
+    background-color: #34495e; /* Slightly lighter focus bg */
+    border-color: var(--complementary-color);
+    box-shadow: 0 0 0 3px rgba(213, 122, 102, 0.3);
+}
+/* .tasks-add-button gradient and text color generally work well on dark too */
+
+body.dark-mode .tasks-list-heading {
+    color: #ecf0f1;
+    border-bottom-color: #4a6278;
+}
+
+body.dark-mode .task-item {
+    background-color: #3a5064; /* Dark card background */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+    border-left-color: var(--complementary-color);
+}
+body.dark-mode .task-item:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+body.dark-mode .task-item--completed {
+    border-left-color: #566573; /* Darker grey for completed accent */
+    opacity: 0.65;
+}
+
+body.dark-mode .task-item--completed:hover {
+    opacity: 0.8;
+}
+
+body.dark-mode .task-item-checkmark {
+    background-color: #2c3e50;
+    border-color: #566573;
+}
+body.dark-mode .task-item-checkbox-label:hover .task-item-checkmark {
+    border-color: var(--complementary-hover);
+}
+body.dark-mode .task-item-checkbox-input:checked ~ .task-item-checkmark {
+    background-color: var(--complementary-color);
+    border-color: var(--complementary-color);
+}
+body.dark-mode .task-item-checkbox-input:checked ~ .task-item-checkmark svg {
+    fill: var(--text-light); /* Ensure check is visible */
+}
+
+body.dark-mode .task-item-text {
+    color: #bdc3c7; /* Lighter text for dark mode */
+}
+body.dark-mode .task-item--completed .task-item-text {
+    color: #7f8c8d; /* Greyed out for completed in dark mode */
+    /* text-decoration-color still var(--complementary-color) */
+}
+
+body.dark-mode .task-item-delete-button {
+    color: #7f8c8d;
+}
+
+body.dark-mode .task-item:hover .task-item-delete-button {
+    color: #95a5a6;
+}
+
+body.dark-mode .task-item-delete-button:hover {
+    color: var(--complementary-color);
+    background-color: rgba(213, 122, 102, 0.15);
+}
+
+body.dark-mode .tasks-empty-state-message {
+    background-color: #304455;
+    color: #95a5a6;
+    border-color: #4a6278;
+}
+
+/* Dark Mode for Error Messages */
+body.dark-mode .form-error-message {
+    color: #f8d7da; /* Lighter text for dark background */
+    background-color: #523030; /* Darker, desaturated red background */
+    border-color: #843534; /* Slightly darker border for dark mode */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* Slightly adjusted shadow for dark bg */
+}
+
+/* Dark Mode for Task Cards */
+body.dark-mode .task-item {
+    background-color: #394a5a; /* Darker card background */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+body.dark-mode .task-item:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .task-complete-checkbox {
+    border-color: #5e7285;
+}
+body.dark-mode .task-complete-checkbox:checked {
+    background-color: var(--complementary-color);
+    border-color: var(--complementary-color);
+}
+body.dark-mode .task-complete-checkbox:checked::after {
+    color: var(
+        --text-dark
+    ); /* Dark check on bright complementary for contrast */
+}
+body.dark-mode .task-complete-checkbox:focus {
+    box-shadow: 0 0 0 3px rgba(213, 122, 102, 0.4); /* Accent color focus */
+}
+
+body.dark-mode .task-name {
+    color: #ecf0f1;
+}
+
+body.dark-mode .task-item.completed .task-name {
+    color: #95a5a6;
+}
+
+body.dark-mode .task-meta {
+    color: #bdc3c7;
+}
+body.dark-mode .task-meta i {
+    color: #95a5a6;
+}
+
+body.dark-mode .task-item.priority-high .task-priority-label {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.15);
+}
+body.dark-mode .task-item.priority-medium .task-priority-label {
+    color: #f39c12;
+    background-color: rgba(243, 156, 18, 0.15);
+}
+
+body.dark-mode .task-action-btn {
+    color: #bdc3c7;
+}
+body.dark-mode .task-action-btn:hover {
+    color: #ffffff;
+    background-color: #4a6278; /* Darker hover background */
+}
+body.dark-mode .task-action-btn.edit-btn:hover {
+    color: #5dade2; /* Lighter blue hover for edit in dark mode */
+}
+body.dark-mode .task-action-btn.delete-btn:hover {
+    color: #e74c3c; /* Red hover for delete in dark mode */
+}
+
+body.dark-mode .task-item.completed {
+    /* opacity: 0.7; Already good */
+    /* background-color: #34495e; */
+}
+
+/* Dark Mode for Add Task Form */
+body.dark-mode .add-task-form-section {
+    background-color: #394a5a; /* Darker form background */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode #newTaskForm .form-group label {
+    color: #e0e0e0;
+}
+
+body.dark-mode #newTaskForm .form-group input[type="text"],
+body.dark-mode #newTaskForm .form-group input[type="datetime-local"],
+body.dark-mode #newTaskForm .form-group select {
+    background-color: #2c3e50;
+    border-color: #556678;
+    color: #ecf0f1;
+}
+body.dark-mode #newTaskForm .form-group input::placeholder {
+    color: #8899a6;
+}
+
+body.dark-mode #newTaskForm .form-group input[type="text"]:focus,
+body.dark-mode #newTaskForm .form-group input[type="datetime-local"]:focus,
+body.dark-mode #newTaskForm .form-group select:focus {
+    border-color: var(--complementary-color);
+    box-shadow: 0 0 0 3px rgba(213, 122, 102, 0.35);
+}
+
+body.dark-mode #newTaskForm .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23cccccc' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+}
+
+body.dark-mode .tasks-cancel-button {
+    background-color: #4a5568;
+    color: #e2e8f0;
+    border-color: #5a677a;
+}
+body.dark-mode .tasks-cancel-button:hover {
+    background-color: #556378;
+    border-color: #6a798e;
+}
+
+/* Dark Mode for Message Area */
+body.dark-mode .message-area {
+    /* General dark mode adjustments if any, usually handled by specific types */
+}
+
+body.dark-mode .message-area.success {
+    color: #d4edda; /* Lighter green text for dark background */
+    background-color: #2a4831; /* Darker, desaturated green background */
+    border-color: #385c42; /* Slightly darker border for dark mode */
+}
+body.dark-mode .message-area.success::before {
+    /* Icon color will inherit, usually fine */
+}
+
+body.dark-mode .message-area.error {
+    color: #f8d7da; /* Lighter red text for dark background */
+    background-color: #523030; /* Darker, desaturated red background */
+    border-color: #843534; /* Slightly darker border for dark mode */
+}
+body.dark-mode .message-area.error::before {
+    /* Icon color will inherit */
+}
+
+body.dark-mode .message-area.info {
+    color: #d1ecf1; /* Lighter blue/teal text */
+    background-color: #2d454e; /* Darker blue/teal background */
+    border-color: #3c5f6a; /* Slightly darker border */
+}
+body.dark-mode .message-area.info::before {
+    /* Icon color will inherit */
+}
+
+/* Hero Section Styling */
+.hero-section {
+    background-color: var(--primary-color);
+    padding: 80px 50px; /* Adjusted padding if needed */
+    text-align: center;
+    display: flex; /* Helps in centering hero-content if needed, but text-align does most of it */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh; /* Make it tall enough for larger orbits */
+    position: relative; /* Crucial for positioning orbits */
+    overflow: hidden; /* Prevents orbits from causing scrollbars */
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.hero-content {
+    max-width: 700px;
+    animation: fadeInUp 0.8s ease-out;
+    position: relative; /* To ensure it's above the orbits */
+    z-index: 2; /* Higher z-index than orbit-path */
+    margin-bottom: 40px; /* Add some space if orbits come close to button */
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    font-size: 3.8em;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.hero-title-accent {
+    font-family: "Pacifico", cursive;
+    color: var(--complementary-color);
+    font-weight: 400;
+}
+
+.hero-subtitle {
+    font-size: 1.3em;
+    color: #555;
+    margin-bottom: 40px;
+    line-height: 1.7;
+}
+
+/* CTA Button (no longer needs its own orbit container) */
+.cta-button {
+    background: var(--accent-gradient);
+    color: var(--text-light);
+    padding: 18px 45px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1.25em;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(213, 122, 102, 0.4);
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+    display: inline-block;
+    /* position: relative; Not strictly needed here if hero-content handles z-index */
+    /* z-index: 5; Not strictly needed here if hero-content handles z-index */
+}
+
+.cta-button:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(213, 122, 102, 0.55);
+    color: var(--text-light);
+}
+
+/* Glittering Stars Animation */
+.star {
+    position: absolute;
+    /* background-color will be the star's fill color */
+    background-color: var(
+        --star-color,
+        var(--complementary-color, rgba(200, 200, 255, 0.8))
+    );
+    pointer-events: none; /* Stars are decorative */
+    animation: twinkle 4s infinite ease-in-out;
+
+    clip-path: polygon(
+        50% 0%,
+        58% 42%,
+        100% 50%,
+        58% 58%,
+        50% 100%,
+        42% 58%,
+        0% 50%,
+        42% 42%
+    );
+
+    /* Adjust glow for the star shape if needed. This one is a bit softer.
+       You can experiment with these values. */
+    filter: drop-shadow(
+        0 0 3px var(--star-glow-color, rgba(220, 220, 255, 0.6))
+    );
+    /* Note: box-shadow doesn't work well with clip-path for outlining the shape itself.
+          filter: drop-shadow() is generally better for complex clipped shapes.
+          If you want a glow on the background behind the star, box-shadow could still be used,
+          but it would apply to the original square div before clipping.
+       */
+}
+
+@keyframes twinkle {
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0.6); /* Start/end a bit smaller */
+    }
+    50% {
+        opacity: 1; /* Max opacity at peak */
+        transform: scale(
+            1.1
+        ); /* Scale up slightly at peak for more "twinkle" */
+    }
+    75% {
+        opacity: 0.7; /* Fade out a bit slower */
+        transform: scale(0.9);
+    }
+}
+
+/* Why Us Section Styling */
+.why-us-section {
+    padding: 70px 50px; /* Vertical and horizontal padding */
+    background-color: #fdfdfd; /* A very light, almost white, calming background */
+    text-align: center;
+    border-top: 1px solid #e7e7e7; /* Subtle separator from hero */
+}
+
+.why-us-container {
+    max-width: 1100px; /* Max width for the content */
+    margin: 0 auto; /* Center the container */
+}
+
+.section-title {
+    font-size: 2.8em; /* Slightly smaller than hero title */
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    position: relative; /* For potential decorative elements */
+}
+
+.why-us-logo-accent {
+    font-family: "Pacifico", cursive; /* Consistent accent font */
+    color: var(--complementary-color);
+    font-weight: 400; /* Pacifico is inherently bold */
+}
+
+.section-subtitle {
+    font-size: 1.15em;
+    color: #555; /* Soft, readable text color */
+    margin-bottom: 50px; /* Space before the benefits grid */
+    max-width: 600px; /* Keep subtitle concise */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    ); /* Responsive grid */
+    gap: 30px; /* Space between cards */
+    text-align: left; /* Reset text-align for card content */
+}
+
+.benefit-card {
+    background-color: var(--primary-color); /* White cards */
+    padding: 35px 30px;
+    border-radius: 12px; /* Softer corners */
+    box-shadow: 0 8px 25px var(--shadow-light); /* Subtle, calming shadow */
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    opacity: 0; /* Start hidden for animation */
+    transform: translateY(20px); /* Start slightly down for animation */
+}
+
+/* Class to trigger animation */
+.benefit-card.is-visible {
+    animation: fadeInUpCard 0.6s ease-out forwards;
+}
+
+/* Staggered animation for cards */
+.benefit-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.benefit-card:nth-child(2) {
+    animation-delay: 0.25s;
+}
+.benefit-card:nth-child(3) {
+    animation-delay: 0.4s;
+}
+/* Add more if you have more cards */
+
+.benefit-card:hover {
+    transform: translateY(-8px) scale(1.02); /* Gentle lift and slight scale */
+    box-shadow: 0 12px 30px var(--shadow-medium); /* Enhanced shadow on hover */
+}
+
+.benefit-icon {
+    margin-bottom: 20px;
+    display: inline-block; /* Allows centering if card is text-align:center */
+}
+
+.benefit-icon svg {
+    width: 48px; /* Control icon size */
+    height: 48px;
+    color: var(--complementary-color); /* Use accent color for icons */
+    stroke-width: 1.5; /* Adjust stroke for visual preference */
+}
+
+.benefit-title {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.benefit-description {
+    font-size: 0.95em;
+    color: #555;
+    line-height: 1.7;
+}
+
+/* Keyframes for card animation (if different from existing fadeInUp) */
+@keyframes fadeInUpCard {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stats Section Styling */
+.stats-section {
+    padding: 70px 50px;
+    background-color: var(
+        --primary-color
+    ); /* Or a very light grey like #f9f9f9 */
+    text-align: center;
+    border-top: 1px solid #e7e7e7;
+}
+
+.stats-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.stats-title-accent {
+    font-family: "Pacifico", cursive; /* Consistent accent font */
+    color: var(--complementary-color);
+    font-weight: 400;
+}
+
+.key-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+    margin-top: 30px; /* Space after subtitle */
+}
+
+.metric-item {
+    background-color: #fdfdfd; /* Slightly off-white for subtle contrast from section bg if section is white */
+    /* if section bg is light grey, primary-color (white) can be used for metric-item */
+    padding: 25px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-light);
+    transition: transform 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.metric-item:hover {
+    transform: translateY(-5px);
+}
+
+.metric-icon svg {
+    color: var(--complementary-color);
+    margin-bottom: 15px;
+}
+
+.metric-value {
+    font-size: 2.8em; /* Prominent number */
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.1;
+}
+
+.metric-label {
+    font-size: 0.95em;
+    color: #555;
+    margin-top: 8px;
+}
+
+/* Charts Styling */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.chart-card {
+    background-color: #fff; /* White background for cards */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--shadow-light);
+    text-align: left;
+    opacity: 0; /* For animation */
+    transform: translateY(30px);
+}
+
+.chart-card.is-visible {
+    animation: fadeInUpCard 0.6s ease-out forwards; /* Re-use existing animation */
+}
+
+.charts-grid .chart-card:nth-child(1) {
+    animation-delay: 0.2s;
+}
+.charts-grid .chart-card:nth-child(2) {
+    animation-delay: 0.4s;
+}
+/* Add more if needed */
+
+.chart-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.chart-placeholder {
+    width: 100%;
+    min-height: 200px; /* Ensure space for the chart */
+    background-color: #f9f9f9; /* Light bg for chart area */
+    border-radius: 8px;
+    padding: 15px;
+    display: flex; /* For simple-bar-chart */
+    align-items: flex-end; /* For simple-bar-chart */
+    justify-content: space-around; /* For simple-bar-chart */
+    overflow: hidden; /* For SVG container if it overflows */
+}
+
+/* Simple CSS Bar Chart */
+.simple-bar-chart .bar {
+    background-color: var(--complementary-color);
+    width: 15%; /* Adjust as needed */
+    border-radius: 5px 5px 0 0; /* Rounded tops */
+    position: relative; /* For labels */
+    transition: height 0.8s ease-out; /* Animate height */
+    animation: growBar 1s ease-out forwards; /* Initial grow animation */
+}
+
+.simple-bar-chart .bar::after {
+    /* For displaying data-value as label */
+    content: attr(data-value);
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75em;
+    color: #777;
+}
+
+@keyframes growBar {
+    from {
+        height: 0%;
+    }
+    /* 'to' height is set by inline style */
+}
+
+/* SVG Bar Chart Enhancements */
+.svg-bar-chart-container {
+    padding: 10px; /* Less padding if SVG handles its own margins */
+}
+
+.svg-bar-chart .bar-group rect {
+    transition: all 0.3s ease-out;
+    animation: growBarSvg 1s ease-out forwards;
+    transform-origin: bottom; /* Grow from bottom */
+    transform: scaleY(0);
+}
+
+.svg-bar-chart .bar-group:hover rect {
+    opacity: 0.8;
+}
+.svg-bar-chart .bar-group:nth-child(1) rect {
+    animation-delay: 0.1s;
+}
+.svg-bar-chart .bar-group:nth-child(2) rect {
+    animation-delay: 0.3s;
+}
+.svg-bar-chart .bar-group:nth-child(3) rect {
+    animation-delay: 0.5s;
+}
+
+@keyframes growBarSvg {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}
+
+.stats-footer-note {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 30px;
+    font-style: italic;
+}
+
+/* About Section Styling */
+.about-section {
+    padding: 70px 50px;
+    background-color: #fdfdfd; /* A very light, calming background */
+    border-top: 1px solid #e7e7e7; /* Subtle separator */
+}
+
+.about-container {
+    max-width: 900px; /* Slightly narrower for focused textual content */
+    margin: 0 auto;
+    text-align: center; /* Center section title and subtitle */
+}
+
+.about-title-accent {
+    font-family: "Pacifico", cursive; /* Consistent accent font */
+    color: var(--complementary-color);
+    font-weight: 400;
+}
+
+.about-content-wrapper {
+    margin-top: 40px; /* Space after subtitle */
+    display: flex; /* Using flex for easier alignment and spacing */
+    flex-direction: column;
+    gap: 40px; /* Space between about-blocks */
+}
+
+.about-block {
+    background-color: var(--primary-color); /* White cards */
+    padding: 35px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--shadow-light);
+    text-align: left; /* Align text to left within blocks */
+
+    /* Initial state for animation */
+    opacity: 0;
+    transform: translateY(30px);
+    /* animation property will be added by .is-visible */
+}
+
+/* NEW: Class to trigger animation for about-block */
+.about-block.is-visible {
+    animation: fadeInUpCard 0.7s ease-out forwards; /* Can reuse or make a new one */
+}
+
+/* Staggered animation for about-blocks */
+.about-block.is-visible:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.about-block.is-visible:nth-child(2) {
+    animation-delay: 0.25s;
+}
+.about-block.is-visible:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.about-icon {
+    margin-bottom: 20px;
+    color: var(--complementary-color);
+    display: inline-block; /* If block is text-align center */
+    /* If block is text-align left, you might want to float or flex it */
+}
+.about-block-title {
+    font-size: 1.8em; /* Prominent title for each block */
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+.motto-block {
+    text-align: center; /* Center content within the Motto block */
+}
+
+.motto-statement {
+    font-size: 1.6em; /* Larger font for the motto itself */
+    font-weight: 400; /* Poppins normal or slightly bold */
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.motto-statement .hero-title-accent {
+    /* Re-using existing accent style */
+    font-size: 1.1em; /* Slightly larger if needed within this context */
+}
+
+.about-block-description {
+    /* For motto block's extra text */
+    font-size: 1em;
+    color: #555;
+    line-height: 1.7;
+    max-width: 600px; /* Keep description concise */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about-list {
+    list-style: none; /* Remove default bullets */
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.about-list li {
+    font-size: 1em;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 12px;
+    padding-left: 28px; /* Space for custom bullet */
+    position: relative;
+}
+
+.about-list li::before {
+    content: "✓"; /* Simple checkmark, or use an SVG/image */
+    position: absolute;
+    left: 0;
+    top: 1px; /* Adjust vertical alignment */
+    color: var(--complementary-color); /* Accent color for bullets */
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Optional: Hover effect for about-block (subtle) */
+.about-block:hover {
+    transform: translateY(-5px) scale(1.01); /* Gentle lift, if desired */
+    box-shadow: 0 10px 30px var(--shadow-medium);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+/* Main content styling for demo - slight adjustment if hero is present */
+main {
+    padding: 40px 50px;
+    text-align: center;
+    min-height: 30vh; /* Ensure there's space even if content is minimal */
+}
+
+/* Footer Styling */
+.site-footer {
+    background-color: #e9ecef; /* A light grey, slightly different from body */
+    color: #6c757d; /* A soft, muted text color */
+    text-align: center;
+    padding: 25px 50px;
+    font-size: 0.9em;
+    border-top: 1px solid #dee2e6; /* A subtle top border */
+    margin-top: auto; /* Pushes footer to bottom if body is flex and content is short */
+}
+
+.site-footer p {
+    margin: 5px 0;
+}
+
+.footer-heart {
+    color: var(--complementary-color); /* Use the accent color for the heart */
+    font-size: 1.1em;
+}
+
+/* Ensure body allows footer to be at the bottom, even with short content */
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex; /* Added */
+    flex-direction: column; /* Added */
+    min-height: 100vh; /* Added */
+}
+
+/* Signup page */
+.signup-body {
+    font-family: "Poppins", sans-serif;
+    background-color: var(--body-bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.signup-container {
+    width: 100%;
+    max-width: 480px; /* Max width for the form card */
+    animation: signupFadeInUp 0.7s ease-out;
+}
+
+@keyframes signupFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Logo Styling */
+.signup-logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.signup-logo {
+    text-decoration: none;
+    font-size: 2.8em;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: inline-block;
+}
+
+.signup-logo-accent {
+    font-family: "Pacifico", cursive;
+    color: var(--complementary-color);
+    font-weight: 400; /* Pacifico is inherently bold */
+    margin-left: -5px;
+}
+
+/* Form Card Styling */
+.signup-form-card {
+    background-color: var(--primary-color);
+    padding: 30px 40px; /* More padding on sides */
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--shadow-medium);
+    text-align: center;
+}
+
+.signup-title {
+    font-size: 2em;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.signup-subtitle {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Form Element Styling */
+.signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-input-group {
+    margin-bottom: 20px;
+    text-align: left; /* Align labels and inputs to the left */
+}
+
+.signup-label {
+    display: block;
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.signup-input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1em;
+    font-family: "Poppins", sans-serif;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background-color: #fff;
+    color: var(--text-dark);
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.signup-input::placeholder {
+    color: #aaa;
+}
+
+.signup-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 0.2rem rgba(213, 122, 102, 0.25); /* Focus glow */
+}
+
+.signup-input-hint {
+    display: block;
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 5px;
+}
+
+.signup-button {
+    background: var(--accent-gradient);
+    color: var(--text-light);
+    padding: 14px 20px;
+    border: none;
+    border-radius: 50px; /* Pill shape */
+    font-size: 1.1em;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(213, 122, 102, 0.3);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+        background-color 0.3s ease;
+    margin-top: 10px; /* Space above button */
+    width: 100%;
+}
+
+.signup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(213, 122, 102, 0.4);
+}
+
+.signup-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 3px 8px rgba(213, 122, 102, 0.35);
+}
+
+/* Login Link Styling */
+.signup-login-link {
+    margin-top: 25px;
+    font-size: 0.95em;
+    color: #555;
+}
+
+.signup-login-link a {
+    color: var(--link-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.signup-login-link a:hover {
+    color: var(--complementary-hover);
+    text-decoration: underline;
+}
+
+/* Login Page Specific Styles */
+.login-page-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f0f2f5; /* A very light neutral background */
+    /* Or use a subtle gradient like:
+    background: linear-gradient(135deg, #f4f7f6 0%, #e9edf0 100%); */
+    overflow: hidden; /* For background shapes */
+    position: relative; /* For background shapes */
+}
+
+/* Abstract Background Shapes */
+.shape-blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    filter: blur(50px); /* Soft blur */
+    animation: moveBlob 20s infinite alternate ease-in-out;
+    z-index: 0;
+}
+
+.shape-blob.one {
+    width: 400px;
+    height: 400px;
+    background-color: var(--complementary-color);
+    top: -100px;
+    left: -150px;
+    animation-duration: 25s;
+}
+
+.shape-blob.two {
+    width: 500px;
+    height: 500px;
+    background-color: #a7c5eb; /* A soft blue, complementary to terracotta */
+    bottom: -150px;
+    right: -200px;
+    animation-duration: 30s;
+    animation-delay: -5s;
+}
+.shape-blob.three {
+    width: 300px;
+    height: 300px;
+    background-color: #f0dbaf; /* A soft warm yellow */
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    animation-duration: 20s;
+    animation-delay: -10s;
+    opacity: 0.1;
+}
+
+@keyframes moveBlob {
+    0% {
+        transform: scale(1) translate(0px, 0px);
+    }
+    50% {
+        transform: scale(1.2) translate(50px, -30px);
+    }
+    100% {
+        transform: scale(1) translate(-20px, 30px);
+    }
+}
+
+.login-container {
+    position: relative; /* To keep content above blobs */
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    background-color: var(--primary-color); /* White */
+    padding: 40px 45px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeInScaleUp 0.7s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+}
+
+.signup-card {
+    background-color: var(--primary-color); /* White */
+    padding: 40px 45px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeInScaleUp 0.7s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+    padding: 40px 45px;
+    max-width: 420px; /* Example: slightly wider for more fields */
+}
+
+@keyframes fadeInScaleUp {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.login-header .login-logo {
+    text-decoration: none;
+    font-size: 2.8em;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.login-header .login-logo .logo-accent {
+    font-family: "Pacifico", cursive;
+    color: var(--complementary-color);
+    font-weight: 400;
+    margin-left: -5px;
+}
+
+.login-header h2 {
+    font-size: 1.8em;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.login-header p {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.login-form .form-group {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.login-form .form-group .icon {
+    margin-right: 8px;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.login-form .form-group input {
+    width: 100%;
+    padding: 12px 12px 12px 10px; /* Make space for icon if placing inside */
+    border: none;
+    border-bottom: 2px solid #ddd;
+    background-color: transparent;
+    font-size: 1em;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s ease;
+    position: relative;
+    z-index: 1; /* Above label initially */
+}
+
+.login-form .form-group label {
+    position: absolute;
+    top: 12px;
+    left: 0px; /* Align with input padding */
+    font-size: 1em;
+    color: #999;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 0; /* Below input initially */
+}
+
+.login-form .form-group input:focus,
+.login-form .form-group input:valid {
+    /* :valid works if 'required' is present */
+    border-bottom-color: var(--complementary-color);
+}
+
+.login-form .form-group input:focus + label,
+.login-form .form-group input:valid + label {
+    top: -18px;
+    left: 0;
+    font-size: 0.8em;
+    color: var(--complementary-color);
+}
+.login-form .form-group input:focus + label .icon,
+.login-form .form-group input:valid + label .icon {
+    color: var(--complementary-color);
+}
+
+/* Optional input line animation */
+.input-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: var(--complementary-color);
+    transition: width 0.3s ease;
+}
+.login-form .form-group input:focus ~ .input-line,
+.login-form .form-group input:valid ~ .input-line {
+    width: 100%;
+}
+/* Form Error Message Styling */
+.form-error-message {
+    display: block; /* Ensure it takes its own line */
+    padding: 12px 18px; /* Good padding */
+    margin-top: 5px; /* Space from the element above (if any) */
+    margin-bottom: 15px; /* Space from the element below */
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9em; /* Slightly smaller than regular text but readable */
+    font-weight: 500; /* Slightly bolder to draw attention */
+    line-height: 1.4;
+    color: #721c24; /* A standard dark red for error text */
+    background-color: #f8d7da; /* A light pink/red background */
+    border: 1px solid #f5c6cb; /* A slightly darker pink/red border */
+    border-radius: 8px; /* Consistent with other rounded corners */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    text-align: left; /* Default, but good to be explicit */
+}
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 0.9em;
+}
+
+.remember-me {
+    color: #555;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.remember-me input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--complementary-color); /* Modern way to color checkbox */
+}
+
+.forgot-password {
+    color: var(--complementary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+}
+.forgot-password:hover {
+    color: var(--complementary-hover);
+    text-decoration: underline;
+}
+
+.login-button {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent-gradient);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(213, 122, 102, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(213, 122, 102, 0.4);
+}
+.login-button .fa-arrow-right {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+.login-button:hover .fa-arrow-right {
+    transform: translateX(5px);
+}
+
+.login-footer {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.login-footer .signup-link {
+    color: var(--complementary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-footer .signup-link:hover {
+    color: var(--complementary-hover);
+    text-decoration: underline;
+}
+
+/* Specific styling for the terms and agreement section if needed */
+.terms-agreement {
+    text-align: left; /* Align text to the left for readability */
+    margin-bottom: 25px; /* Adjust spacing */
+    font-size: 0.85em;
+}
+
+.terms-agreement .remember-me {
+    /* Reusing class name here, but context is terms */
+    line-height: 1.4;
+}
+
+.inline-link {
+    color: var(--complementary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+.inline-link:hover {
+    text-decoration: underline;
+    color: var(--complementary-hover);
+}
+
+/* TASKS PAGE SPECIFIC STYLES */
+.tasks-page-main-container {
+    padding: 40px 20px; /* Similar to main padding in app.css */
+    display: flex;
+    justify-content: center;
+    animation: fadeInUp 0.6s ease-out; /* From app.css */
+}
+
+.tasks-page-content-wrapper {
+    background-color: var(--primary-color);
+    padding: 30px 35px;
+    border-radius: 16px; /* Consistent with login-card */
+    box-shadow: 0 8px 25px var(--shadow-medium); /* Consistent shadow */
+    width: 100%;
+    max-width: 700px; /* Max width for the tasks area */
+}
+
+.tasks-page-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0; /* Subtle separator */
+}
+
+.tasks-page-title {
+    font-size: 2.2em; /* Slightly smaller than hero-title */
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.tasks-page-title-accent {
+    color: var(--complementary-color);
+    font-family: "Pacifico", cursive; /* Match logo accent */
+    font-size: 1.2em; /* Make the dot a bit larger relative to title */
+    line-height: 0; /* Adjust vertical alignment of dot */
+    margin-left: -2px;
+}
+
+.tasks-page-subtitle {
+    font-size: 1.1em;
+    color: #555; /* From hero-subtitle */
+}
+
+/* Input Section */
+.tasks-input-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 35px;
+    align-items: flex-start; /* Align items to the top in case button wraps */
+}
+
+.tasks-input-group {
+    flex-grow: 1;
+    position: relative;
+}
+
+.tasks-input-field {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1em;
+    font-family: "Poppins", sans-serif;
+    color: var(--text-dark);
+    background-color: #f9f9f9; /* Very light bg for input */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tasks-input-field::placeholder {
+    color: #999;
+}
+
+.tasks-input-field:focus {
+    border-color: var(--complementary-color);
+    box-shadow: 0 0 0 3px rgba(213, 122, 102, 0.2); /* Focus glow */
+    background-color: var(--primary-color);
+}
+
+/* Optional: Line animation for input, similar to login */
+.tasks-input-focus-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: var(--complementary-color);
+    transition: width 0.3s ease;
+    border-radius: 0 0 8px 8px; /* Match input field radius if line is on border */
+}
+
+.tasks-add-button {
+    padding: 14px 25px;
+    background: var(--accent-gradient); /* Use gradient from app.css */
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px; /* Consistent with input field */
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(213, 122, 102, 0.3); /* From signup-button */
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+.tasks-add-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(213, 122, 102, 0.4);
+}
+.tasks-add-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 6px rgba(213, 122, 102, 0.3);
+}
+
+/* Task List Section */
+.tasks-list-section {
+    margin-top: 20px;
+}
+
+.tasks-list-heading {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 20px; /* Increased margin for card spacing */
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.tasks-list-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 20px;
+}
+
+.task-item {
+    background-color: var(--primary-color);
+    border-radius: 10px; /* Slightly more rounded */
+    box-shadow: 0 4px 12px var(--shadow-light);
+    padding: 18px 20px 18px 30px; /* More left padding for priority bar space */
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative; /* For the priority bar */
+    transition: all 0.3s ease, transform 0.2s ease-out;
+    overflow: hidden; /* Ensures priority bar corners are clipped by border-radius */
+}
+
+.task-item:last-child {
+    margin-bottom: 0;
+}
+.task-item:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 6px 18px var(--shadow-medium);
+}
+
+/* Priority Bar */
+.task-priority-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px; /* Thicker bar */
+    border-top-left-radius: 10px; /* Match parent */
+    border-bottom-left-radius: 10px; /* Match parent */
+    transition: background-color 0.3s ease;
+}
+
+.task-item.priority-high .task-priority-bar {
+    background-color: #e74c3c; /* Red for High */
+}
+
+.task-item.priority-medium .task-priority-bar {
+    background-color: #f39c12; /* Orange for Medium */
+}
+.task-item.priority-low .task-priority-bar {
+    background-color: #3498db; /* Blue for Low */
+}
+
+/* Task Main Content (Checkbox + Details) */
+.task-main-content {
+    display: flex;
+    align-items: flex-start; /* Align items to top for multi-line task names */
+    flex-grow: 1;
+    margin-right: 15px; /* Space before action buttons */
+}
+
+.task-complete-checkbox {
+    appearance: none; /* Remove default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #bdc3c7;
+    border-radius: 6px;
+    margin-right: 15px;
+    margin-top: 2px; /* Align better with first line of text */
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0; /* Prevent checkbox from shrinking */
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.task-complete-checkbox:checked {
+    background-color: var(--complementary-color);
+    border-color: var(--complementary-color);
+}
+
+.task-complete-checkbox:checked::after {
+    content: "\f00c"; /* Font Awesome check icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 12px;
+    color: var(--text-light);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.task-complete-checkbox:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(213, 122, 102, 0.3); /* Accent color focus */
+}
+
+/* Task Details (Name + Meta) */
+.task-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.task-name {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.4;
+    cursor: pointer; /* Since it's a label for the checkbox */
+    transition: color 0.3s ease;
+}
+
+.task-item.completed .task-name {
+    text-decoration: line-through;
+    color: #7f8c8d;
+}
+
+.task-meta {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Spacing between meta items */
+    font-size: 0.85em;
+    color: #777;
+}
+
+.task-meta i {
+    margin-right: 5px;
+    color: #95a5a6; /* Slightly different icon color */
+}
+
+.task-priority-label {
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.task-item.priority-high .task-priority-label {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+}
+.task-item.priority-medium .task-priority-label {
+    color: #f39c12;
+    background-color: rgba(243, 156, 18, 0.1);
+}
+/* Low priority label is omitted in example HTML for cleaner look, but can be added if needed */
+.task-item.priority-low .task-priority-label {
+    /* display: none; Or style if you want to show it */
+    color: #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+/* Task Actions (Buttons) */
+.task-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between action buttons */
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.task-action-btn {
+    background: transparent;
+    border: none;
+    color: #7f8c8d;
+    font-size: 1.1em; /* Adjust icon size */
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-action-btn:hover {
+    color: var(--text-dark);
+    background-color: #f0f0f0; /* Light hover background */
+    transform: scale(1.1);
+}
+
+.task-action-btn.edit-btn:hover {
+    color: #2980b9; /* Blue hover for edit */
+}
+.task-action-btn.delete-btn:hover {
+    color: #c0392b; /* Red hover for delete */
+}
+
+/* Completed State Adjustments */
+.task-item.completed {
+    opacity: 0.75;
+    /* background-color: #f9f9f9; Slightly different bg for completed */
+}
+
+.task-item.completed:hover {
+    opacity: 1; /* Bring to full opacity on hover */
+}
+
+/* Custom Checkbox Styling - adapted from your first example for uniqueness */
+
+.tasks-empty-state-message {
+    text-align: center;
+    color: #777;
+    font-style: italic;
+    padding: 40px 20px; /* More padding for empty state */
+    display: none;
+    background-color: #fcfcfc; /* Slightly different background for empty state */
+    border-radius: 10px;
+    border: 1px dashed #e0e0e0;
+    margin-top: 20px;
+}
+
+/* Animation for adding task */
+.task-item-enter {
+    animation: taskEnterAnimation 0.4s cubic-bezier(0.215, 0.61, 0.355, 1)
+        forwards;
+}
+@keyframes taskEnterAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.95); /* Start slightly higher and smaller */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.task-item-exit {
+    animation: taskExitAnimation 0.35s cubic-bezier(0.55, 0.055, 0.675, 0.19)
+        forwards;
+}
+@keyframes taskExitAnimation {
+    from {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+        max-height: 100px; /* Approximate initial height */
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9) translateX(30px); /* Shrink and slide out */
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0; /* Collapse margin for smooth removal */
+        max-height: 0; /* Collapse height */
+        border-width: 0;
+        overflow: hidden;
+    }
+}
+
+/* Styles for View Switching */
+.tasks-view {
+    display: none; /* Hide all views by default */
+    animation: viewFadeIn 0.5s ease-out; /* Simple fade-in for views */
+}
+
+.tasks-view.active-view {
+    display: block; /* Show the active view */
+}
+
+@keyframes viewFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Styling for the Add Task Form Section */
+.add-task-form-section {
+    background-color: var(--primary-color);
+    padding: 30px 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--shadow-light);
+    margin-top: 20px;
+    max-width: 650px; /* Control form width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#newTaskForm .form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+#newTaskForm .form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+#newTaskForm .form-group input[type="text"],
+#newTaskForm .form-group input[type="datetime-local"],
+#newTaskForm .form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dce1e5;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: "Poppins", sans-serif;
+    color: var(--text-dark);
+    background-color: #fdfdfd;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+#newTaskForm .form-group input::placeholder {
+    color: #a0a0a0;
+}
+
+#newTaskForm .form-group input[type="text"]:focus,
+#newTaskForm .form-group input[type="datetime-local"]:focus,
+#newTaskForm .form-group select:focus {
+    outline: none;
+    border-color: var(--complementary-color);
+    box-shadow: 0 0 0 3px rgba(213, 122, 102, 0.25);
+}
+
+#newTaskForm .form-group select {
+    appearance: none; /* For custom arrow later if desired */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px 12px;
+    padding-right: 40px; /* Make space for arrow */
+}
+
+.form-actions-group {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px; /* Space between buttons */
+    justify-content: flex-end; /* Align buttons to the right */
+}
+
+/* Reusing .tasks-add-button from potential quick add */
+/* Ensure .tasks-add-button is general enough or create a new class */
+#saveNewTaskBtn {
+    /* More specific if needed */
+    padding: 12px 25px; /* Adjust padding */
+    font-size: 1em;
+}
+#saveNewTaskBtn i {
+    margin-right: 8px;
+}
+
+.tasks-cancel-button {
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: 500;
+    background-color: #e9ecef; /* Light grey */
+    color: #495057; /* Dark grey text */
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.tasks-cancel-button:hover {
+    background-color: #dee2e6;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
+/* Message Area Styling (General) */
+.message-area {
+    padding: 12px 18px;
+    margin-top: 15px; /* Space from the element above (e.g., form actions) */
+    margin-bottom: 15px; /* Space from the element below */
+    border-radius: 8px; /* Consistent with other rounded corners */
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9em;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: left;
+    border: 1px solid transparent; /* Base border */
+    display: none; /* Hidden by default, show with JS when needed */
+    animation: fadeInMessage 0.3s ease-out;
+}
+
+@keyframes fadeInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success Message Styling */
+.message-area.success {
+    color: #155724; /* Dark green text */
+    background-color: #d4edda; /* Light green background */
+    border-color: #c3e6cb; /* Slightly darker green border */
+}
+.message-area.success::before {
+    content: "\f058"; /* Font Awesome solid check-circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900; /* For solid icons */
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+/* Error Message Styling */
+.message-area.error {
+    color: #721c24; /* Dark red text (consistent with .form-error-message) */
+    background-color: #f8d7da; /* Light pink/red background */
+    border-color: #f5c6cb; /* Slightly darker pink/red border */
+}
+.message-area.error::before {
+    content: "\f06a"; /* Font Awesome solid exclamation-circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900; /* For solid icons */
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+/* Informational/Warning Message Styling (Optional) */
+.message-area.info {
+    color: #0c5460; /* Dark blue/teal text */
+    background-color: #d1ecf1; /* Light blue/teal background */
+    border-color: #bee5eb; /* Slightly darker blue/teal border */
+}
+.message-area.info::before {
+    content: "\f05a"; /* Font Awesome solid info-circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900; /* For solid icons */
+    margin-right: 10px;
+    font-size: 1.1em;
+}
