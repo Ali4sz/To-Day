@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tasksEmptyStateAll.style.display = "none";
         }
     }
-
+    // --- Fetch Today Tasks ---
     async function fetchTodaysTasks() {
         // Ensure the elements exist before trying to manipulate them
         if (!taskListTodayUl || !tasksEmptyStateToday) {

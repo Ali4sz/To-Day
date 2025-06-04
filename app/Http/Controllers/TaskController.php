@@ -29,6 +29,7 @@ class TaskController extends Controller
                 'task_name' => $task->task_name,
                 'display_due_string' => $task->display_due_date_string, // Using accessor
                 'priority' => $task->priority,
+                'is_completed' => $task->is_completed,
             ];
         });
         return response()->json($tasks);
