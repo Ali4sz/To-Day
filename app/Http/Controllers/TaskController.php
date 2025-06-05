@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -137,7 +138,22 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        // $task = Task::findOrFail()
+        $validated = $request->validate([
+            'is_completed' => 'required|boolean',
+        ]);
+
+        try {
+            $task->is_completed = $validated['is_completed'];
+            $task->save();
+
+            return response()->json([
+                'message' => 'Task updated successfully',
+                'task' => $task,
+            ], 200);
+        } catch (Exception $e) {
+            //throw $th;
+        }
     }
 
     /**

@@ -231,9 +231,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }">
               <div class="task-priority-bar"></div>
               <div class="task-main-content">
-                <input type="checkbox" class="task-complete-checkbox" id="task-${
+                <input type="checkbox" class="task-complete-checkbox" data-task-id="${
                     task.id
-                }" ${checkboxChecked} aria-label="Mark task as complete">
+                }" id="task-${
+            task.id
+        }" ${checkboxChecked} aria-label="Mark task as complete">
                 <div class="task-details">
                   <label for="task-${task.id}" class="task-name">${escapeHTML(
             task.task_name
@@ -331,6 +333,61 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Could not fetch today's tasks:", error);
             taskListTodayUl.innerHTML = `<li>Error loading today's tasks. Please try again. (${error.message})</li>`;
             tasksEmptyStateToday.style.display = "none";
+        }
+    }
+
+    // --- Task Completed ---
+    async function taskCompleted(event) {
+        if (!event.target.matches(".task-complete-checkbox")) {
+            return;
+        }
+
+        const checkbox = event.target;
+        const taskId = checkbox.dataset.taskId; // Ensure checkbox has data-task-id
+        const isCompleted = checkbox.checked;
+        const taskItemLi = checkbox.closest(".task-item"); // Get the parent <li>
+        const fullApiUrl = `${apiBaseUrl}/tasks/today`;
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta
+            ? csrfTokenMeta.getAttribute("content")
+            : null;
+
+        if (!taskId || !taskItemLi) {
+            console.error(
+                "Task ID or task item <li> not found for checkbox:",
+                checkbox
+            );
+            return;
+        }
+
+        // Optimistic UI Update
+        taskItemLi.classList.toggle("completed", isCompleted);
+
+        try {
+            const response = await fetch(fullApiUrl, {
+                method: "PATCH",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({ is_completed: isCompleted }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                taskItemLi.classList.toggle("completed", !isCompleted); // Toggle back
+                checkbox.checked = !isCompleted; // Revert checkbox state
+                alert(
+                    `Error updating task: ${result.message || "Unknown error"}`
+                );
+                console.error("Failed to update task status:", result);
+            }
+        } catch (error) {
+            // Network error or other fetch issue, revert optimistic update
+            taskItemLi.classList.toggle("completed", !isCompleted);
+            checkbox.checked = !isCompleted;
+            alert(`Error updating task: ${error.message}`);
+            console.error("Network or other error:", error);
         }
     }
 
@@ -462,5 +519,12 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelAddTaskBtn.addEventListener("click", () => {
             setActiveView("today");
         });
+    }
+
+    if (taskListAllUl) {
+        taskListAllUl.addEventListener("click", taskCompleted);
+    }
+    if (taskListTodayUl) {
+        taskListTodayUl.addEventListener("click", taskCompleted);
     }
 });
