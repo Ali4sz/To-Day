@@ -39,7 +39,7 @@ class TaskController extends Controller
     public function getTodaysTasksData()
     {
         $tasks = Task::where('is_today', true)
-            ->where('is_completed', false) // Usually, you only want incomplete tasks for today
+            ->where('is_completed', true) // Usually, you only want incomplete tasks for today
             ->orderBy('priority', 'desc')  // Example ordering
             ->orderBy('due_date', 'asc')
             ->get()
@@ -152,7 +152,11 @@ class TaskController extends Controller
                 'task' => $task,
             ], 200);
         } catch (Exception $e) {
-            //throw $th;
+            // Log the error for server-side debugging
+            \Log::error('Error updating task ' . ($task->id ?? 'unknown') . ': ' . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while updating the task. Please try again.'
+            ], 500); // Internal Server Error
         }
     }
 

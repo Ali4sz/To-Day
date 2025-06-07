@@ -11,4 +11,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('tasks/all', [TaskController::class, 'getAllTasksData'])->name('tasks.all.data');
 Route::get('tasks/today', [TaskController::class, 'getTodaysTasksData'])->name('tasks.today.data');
 
-Route::patch('tasks/today', [TaskController::class, 'update'])->name('tasks.today.update');
+Route::patch('tasks/{task}/today', [TaskController::class, 'update'])->name('tasks.today.update');

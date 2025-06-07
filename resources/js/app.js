@@ -346,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const taskId = checkbox.dataset.taskId; // Ensure checkbox has data-task-id
         const isCompleted = checkbox.checked;
         const taskItemLi = checkbox.closest(".task-item"); // Get the parent <li>
-        const fullApiUrl = `${apiBaseUrl}/tasks/today`;
+        const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}/today`;
         const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
         const csrfToken = csrfTokenMeta
             ? csrfTokenMeta.getAttribute("content")
@@ -360,9 +360,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Optimistic UI Update
-        taskItemLi.classList.toggle("completed", isCompleted);
-
         try {
             const response = await fetch(fullApiUrl, {
                 method: "PATCH",
@@ -373,15 +370,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ is_completed: isCompleted }),
             });
-            const result = await response.json();
-            if (!response.ok || !result.success) {
-                taskItemLi.classList.toggle("completed", !isCompleted); // Toggle back
-                checkbox.checked = !isCompleted; // Revert checkbox state
+            // const result = await response.json();
+            // if (!response.ok || !result.success) {
+            //     taskItemLi.classList.toggle("completed", !isCompleted); // Toggle back
+            //     checkbox.checked = !isCompleted; // Revert checkbox state
+            if (!response.ok) {
+                const errorResult = await response.json(); // Try to get error message from server
                 alert(
-                    `Error updating task: ${result.message || "Unknown error"}`
+                    // `Error updating task: ${result.message || "Unknown error"}`
+                    `Error updating task: ${
+                        errorResult.message || "Unknown error"
+                    }`
                 );
-                console.error("Failed to update task status:", result);
+                // console.error("Failed to update task status:", result);
+
+                console.error("Failed to update task status:", errorResult);
+                return; // Exit the function on error
             }
+            // If response is ok, we assume the update was successful
+            taskItemLi.classList.toggle("completed", isCompleted);
+            // No need to revert checkbox, as success means it should stay toggled.
         } catch (error) {
             // Network error or other fetch issue, revert optimistic update
             taskItemLi.classList.toggle("completed", !isCompleted);
