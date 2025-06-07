@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->string('task_name');
             $table->string('due_date');
-            $table->boolean('is_today');
             $table->string('priority');
             $table->boolean('is_completed')->default(false);
             $table->timestamps();

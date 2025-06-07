@@ -14,14 +14,12 @@ class Task extends Model
         'user_id',
         'task_name',
         'due_date',
-        'is_today',
         'priority',
     ];
 
     protected $casts = [
         'due_date' => 'datetime',
         'is_completed' => 'boolean',
-        'is_for_today' => 'boolean', // Add this
     ];
 
     // Accessor to format due_date for display

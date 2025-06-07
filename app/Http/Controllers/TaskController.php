@@ -52,7 +52,6 @@ class TaskController extends Controller
                     'priority' => $task->priority,
                     'priority_label' => $task->priority_label,
                     'is_completed' => $task->is_completed,
-                    'is_today' => $task->is_today, // Good to return this
                 ];
             });
         return response()->json($tasks);
@@ -92,11 +91,11 @@ class TaskController extends Controller
             $task->priority = $request->input('priority');
             $task->user_id = Auth::id();
             // Determine if the task is for today
-            if ($isToday = $task->due_date && Carbon::parse($task->due_date)->isToday()) {
-                $task->is_today = true;
-            } else {
-                $task->is_today = false;
-            }
+            // if ($isToday = $task->due_date && Carbon::parse($task->due_date)->isToday()) {
+            //     $task->is_today = true;
+            // } else {
+            //     $task->is_today = false;
+            // }
             // $task->is_completed = false; // Default for new tasks
             $task->save();
 
@@ -105,8 +104,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'message' => 'Task added successfully!',
-                'task' => $task,
-                'isToday' => $isToday // Send this back to help JS decide where to put it
+                'task' => $task
             ], 201); // Created
         } catch (\Exception $e) {
             // Log the error for server-side debugging
