@@ -33,7 +33,7 @@ class Task extends Model
 
     public function getDisplayDueDateStringAttribute()
     {
-        if ($this->is_today) {
+        if ($this->due_date->isToday()) {
             if ($this->due_date) {
                 // $this->due_date is already a Carbon instance
                 return 'Today, ' . $this->due_date->format('g:i A'); // e.g., Today, 5:00 PM

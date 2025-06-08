@@ -38,8 +38,8 @@ class TaskController extends Controller
 
     public function getTodaysTasksData()
     {
-        $tasks = Task::where('is_today', true)
-            ->where('is_completed', true) // Usually, you only want incomplete tasks for today
+        $tasks = Task::whereDate('due_date', Carbon::today())
+            ->orWhere('is_completed', true) // Usually, you only want incomplete tasks for today
             ->orderBy('priority', 'desc')  // Example ordering
             ->orderBy('due_date', 'asc')
             ->get()
