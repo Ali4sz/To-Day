@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tasksEmptyStateToday = document.getElementById(
         "tasksEmptyStateToday"
     );
+    const deleteBtn = document.getElementsByClassName(
+        "task-action-btn delete-btn"
+    );
 
     let apiBaseUrl = ""; // Initialize
     const apiBaseUrlMeta = document.querySelector('meta[name="api-base-url"]');
@@ -526,6 +529,36 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cancelAddTaskBtn) {
         cancelAddTaskBtn.addEventListener("click", () => {
             setActiveView("today");
+        });
+    }
+
+    // --- Delete Task ---
+    async function deleteTask(taskId) {
+        const taskId = checkbox.dataset.taskId;
+        const fullApiUrl = `${apiBaseUrl}/tasks/all`;
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta
+            ? csrfTokenMeta.getAttribute("content")
+            : null;
+        deleteBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const result = fetch(fullApiUrl, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            });
+            if (!response.ok || !result.success) {
+                alert(
+                    `Error deleting task: ${result.message || "Unknown error"}`
+                );
+                console.error("Failed to delete task:", result);
+                return; // Exit the function on error
+            }
+            alert("task deleted");
         });
     }
 
