@@ -19,9 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const tasksEmptyStateToday = document.getElementById(
         "tasksEmptyStateToday"
     );
-    const deleteBtn = document.getElementsByClassName(
-        "task-action-btn delete-btn"
-    );
+    // const deleteBtn = document.getElementsByClassName(
+    //     "task-action-btn delete-btn"
+    // );
+    const item = document.getElementsByClassName("task-item");
 
     let apiBaseUrl = ""; // Initialize
     const apiBaseUrlMeta = document.querySelector('meta[name="api-base-url"]');
@@ -392,7 +393,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             // If response is ok, we assume the update was successful
             taskItemLi.classList.toggle("completed", isCompleted);
-            // No need to revert checkbox, as success means it should stay toggled.
         } catch (error) {
             // Network error or other fetch issue, revert optimistic update
             taskItemLi.classList.toggle("completed", !isCompleted);
@@ -533,17 +533,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Delete Task ---
-    async function deleteTask(taskId) {
-        const taskId = checkbox.dataset.taskId;
-        const fullApiUrl = `${apiBaseUrl}/tasks/all`;
+    async function deleteTask(event) {
+        const deleteBtn = event.target.closest(".delete-btn");
+        if (!deleteBtn) {
+            return;
+        }
+        const taskItem = deleteBtn.closest(".task-item");
+        if (!taskItem) {
+            console.error("Could not find parent task item for delete button.");
+            return;
+        }
+        const taskId = taskItem.dataset.taskId;
+        if (!taskId) {
+            console.error("Task ID not found on task item:", taskItem);
+            return;
+        }
+        // Optional: Add a confirmation step
+        if (
+            !confirm(
+                `Are you sure you want to delete task "${
+                    taskItem.querySelector(".task-name")?.textContent ||
+                    "this task"
+                }"?`
+            )
+        ) {
+            return;
+        }
+        taskItem.remove();
+        const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}`;
         const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
         const csrfToken = csrfTokenMeta
             ? csrfTokenMeta.getAttribute("content")
             : null;
-        deleteBtn.addEventListener("click", (e) => {
-            e.preventDefault();
 
-            const result = fetch(fullApiUrl, {
+        if (!csrfToken) {
+            alert("CSRF token not found. Cannot delete task.");
+            console.error("CSRF token not found.");
+            return;
+        }
+
+        try {
+            const response = await fetch(fullApiUrl, {
                 method: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": csrfToken,
@@ -551,21 +581,47 @@ document.addEventListener("DOMContentLoaded", () => {
                     Accept: "application/json",
                 },
             });
-            if (!response.ok || !result.success) {
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // alert(result.message || "Task deleted successfully!");
+                taskItem.remove(); // Remove the task item from the DOM
+
+                // Check if the list is now empty and show empty state if needed
+                if (
+                    taskListAllUl &&
+                    taskListAllUl.children.length === 0 &&
+                    tasksEmptyStateAll
+                ) {
+                    tasksEmptyStateAll.style.display = "block";
+                }
+                if (
+                    taskListTodayUl &&
+                    taskListTodayUl.children.length === 0 &&
+                    tasksEmptyStateToday
+                ) {
+                    tasksEmptyStateToday.style.display = "block";
+                }
+            } else {
                 alert(
-                    `Error deleting task: ${result.message || "Unknown error"}`
+                    `Error deleting task: ${
+                        result.message || response.statusText || "Unknown error"
+                    }`
                 );
                 console.error("Failed to delete task:", result);
-                return; // Exit the function on error
             }
-            alert("task deleted");
-        });
+        } catch (error) {
+            alert(`Error deleting task: ${error.message}`);
+            console.error("Network or other error during delete:", error);
+        }
     }
 
     if (taskListAllUl) {
         taskListAllUl.addEventListener("click", taskCompleted);
+        taskListAllUl.addEventListener("click", deleteTask);
     }
     if (taskListTodayUl) {
         taskListTodayUl.addEventListener("click", taskCompleted);
+        taskListTodayUl.addEventListener("click", deleteTask);
     }
 });
