@@ -616,6 +616,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // --- Edit Task ---
+    async function editTask(event) {
+        const editBtn = event.target.closest(".edit-btn");
+        if (!editBtn) {
+            return;
+        }
+    }
+
     if (taskListAllUl) {
         taskListAllUl.addEventListener("click", taskCompleted);
         taskListAllUl.addEventListener("click", deleteTask);
