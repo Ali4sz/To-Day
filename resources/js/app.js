@@ -637,6 +637,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const csrfToken = csrfTokenMeta
             ? csrfTokenMeta.getAttribute("content")
             : null;
+
+        if (!csrfToken) {
+            alert("CSRF token not found. Cannot delete task.");
+            console.error("CSRF token not found.");
+            return;
+        }
+
+        const response = await fetch(fullApiUrl, {
+            method: "PATCH",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-type": "application/json",
+                Accept: "application/json",
+            },
+        });
+        const result = await response.json();
+
+        if(response.ok || result.success) {
+
+        }
     }
 
     if (taskListAllUl) {
