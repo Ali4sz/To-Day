@@ -632,7 +632,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Task ID not found on task item:", taskItem);
             return;
         }
-        const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}`;
+        const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}/edit`;
         const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
         const csrfToken = csrfTokenMeta
             ? csrfTokenMeta.getAttribute("content")
