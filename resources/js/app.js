@@ -622,6 +622,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!editBtn) {
             return;
         }
+        const taskItem = editBtn.closest(".task-item");
+        if (!taskItem) {
+            console.error("Could not find parent task item for edit button.");
+            return;
+        }
+        const taskId = taskItem.dataset.taskId;
+        if (!taskId) {
+            console.error("Task ID not found on task item:", taskItem);
+            return;
+        }
+        const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}`;
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta
+            ? csrfTokenMeta.getAttribute("content")
+            : null;
     }
 
     if (taskListAllUl) {
