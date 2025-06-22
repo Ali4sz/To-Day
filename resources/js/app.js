@@ -51,6 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     }
 
+    // Helper to restore the original task card UI
+    function restoreTaskCard(taskItem) {
+        if (taskItem && taskItem._originalHTML) {
+            taskItem.innerHTML = taskItem._originalHTML;
+            taskItem.classList.remove("task-item--confirming-delete");
+            delete taskItem._originalHTML; // Clean up the stored property
+        }
+    }
+
     // --- Message Area Helper Functions (NEWLY INTEGRATED) ---
     function showTaskMessage(htmlContent, type = "info", duration = 4000) {
         if (!addTaskMessageArea) return;
