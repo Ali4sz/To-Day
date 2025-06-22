@@ -34,21 +34,21 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    // Function to generate the new, inline confirmation HTML
+    // Helper to create the inline confirmation HTML
     function createInlineConfirmationHTML(taskId) {
         return `
-            <div class="inline-confirmation-wrapper">
-                <span class="confirmation-text">Are you sure?</span>
-                <div class="confirmation-actions">
-                    <button class="confirm-delete-btn" data-task-id="${taskId}" title="Confirm Delete">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="cancel-delete-btn" title="Cancel">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+        <div class="inline-confirmation-wrapper">
+            <span class="confirmation-text">Are you sure?</span>
+            <div class="confirmation-actions">
+                <button class="confirm-delete-btn" data-task-id="${taskId}" title="Confirm Delete">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="cancel-delete-btn" title="Cancel">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        `;
+        </div>
+    `;
     }
 
     // --- Message Area Helper Functions (NEWLY INTEGRATED) ---
