@@ -158,8 +158,6 @@ class TaskController extends Controller
         }
     }
 
-    public function editTask(Request $request, Task $task) {}
-
     /**
      * Remove the specified resource from storage.
      */
