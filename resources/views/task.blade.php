@@ -158,6 +158,48 @@
 
         </div> <!-- tasks-page-content-wrapper END -->
     </main>
+
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close-btn" aria-label="Close modal">×</button>
+            <h2>Edit Task</h2>
+            <div id="editTaskMessageArea" class="my-3"></div>
+            <form id="editTaskForm">
+                <div class="form-group">
+                    <label for="editTaskName">Task Name</label>
+                    <input type="text" id="editTaskName" name="taskName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editTaskDueDate">Due Date & Time</label>
+                    <input type="datetime-local" id="editTaskDueDate" name="dueDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="editTaskPriority">Priority</label>
+                    <select id="editTaskPriority" name="priority">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editTaskIsForToday">Mark for Today's List?</label>
+                    <input type="checkbox" id="editTaskIsForToday" name="isForToday" value="1">
+                </div>
+
+                <div class="form-actions-group">
+                    <button type="submit" class="tasks-add-button" id="saveTaskChangesBtn">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 </body>
 
 </html>
