@@ -15,4 +15,4 @@ Route::patch('tasks/{task}/today', [TaskController::class, 'update'])->name('tas
 Route::patch('tasks/{task}/edit', [TaskController::class, 'editTask'])->name('tasks.edit');
 
 
-Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.today.destroy');
+Route::delete('tasks/{task}/delete', [TaskController::class, 'destroy'])->name('tasks.today.destroy');

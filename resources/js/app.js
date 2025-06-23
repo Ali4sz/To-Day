@@ -559,87 +559,177 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Delete Task ---
-    async function deleteTask(event) {
-        const deleteBtn = event.target.closest(".delete-btn");
-        if (!deleteBtn) {
-            return;
-        }
-        const taskItem = deleteBtn.closest(".task-item");
-        if (!taskItem) {
-            console.error("Could not find parent task item for delete button.");
-            return;
-        }
-        const taskId = taskItem.dataset.taskId;
-        if (!taskId) {
-            console.error("Task ID not found on task item:", taskItem);
-            return;
-        }
-        // Optional: Add a confirmation step
-        if (
-            !confirm(
-                `Are you sure you want to delete task "${
-                    taskItem.querySelector(".task-name")?.textContent ||
-                    "this task"
-                }"?`
-            )
-        ) {
-            return;
-        }
-        taskItem.remove();
-        const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}`;
-        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-        const csrfToken = csrfTokenMeta
-            ? csrfTokenMeta.getAttribute("content")
-            : null;
+    // async function deleteTask(event) {
+    //     const deleteBtn = event.target.closest(".delete-btn");
+    //     if (!deleteBtn) {
+    //         return;
+    //     }
+    //     const taskItem = deleteBtn.closest(".task-item");
+    //     if (!taskItem) {
+    //         console.error("Could not find parent task item for delete button.");
+    //         return;
+    //     }
+    //     const taskId = taskItem.dataset.taskId;
+    //     if (!taskId) {
+    //         console.error("Task ID not found on task item:", taskItem);
+    //         return;
+    //     }
+    //     // Optional: Add a confirmation step
+    //     if (
+    //         !confirm(
+    //             `Are you sure you want to delete task "${
+    //                 taskItem.querySelector(".task-name")?.textContent ||
+    //                 "this task"
+    //             }"?`
+    //         )
+    //     ) {
+    //         return;
+    //     }
+    //     taskItem.remove();
+    //     const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}`;
+    //     const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+    //     const csrfToken = csrfTokenMeta
+    //         ? csrfTokenMeta.getAttribute("content")
+    //         : null;
 
-        if (!csrfToken) {
-            alert("CSRF token not found. Cannot delete task.");
-            console.error("CSRF token not found.");
-            return;
-        }
+    //     if (!csrfToken) {
+    //         alert("CSRF token not found. Cannot delete task.");
+    //         console.error("CSRF token not found.");
+    //         return;
+    //     }
 
-        try {
-            const response = await fetch(fullApiUrl, {
-                method: "DELETE",
-                headers: {
-                    "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-            const result = await response.json();
+    //     try {
+    //         const response = await fetch(fullApiUrl, {
+    //             method: "DELETE",
+    //             headers: {
+    //                 "X-CSRF-TOKEN": csrfToken,
+    //                 "Content-Type": "application/json",
+    //                 Accept: "application/json",
+    //             },
+    //         });
+    //         const result = await response.json();
 
-            if (response.ok && result.success) {
-                // alert(result.message || "Task deleted successfully!");
-                taskItem.remove(); // Remove the task item from the DOM
+    //         if (response.ok && result.success) {
+    //             // alert(result.message || "Task deleted successfully!");
+    //             taskItem.remove(); // Remove the task item from the DOM
 
-                // Check if the list is now empty and show empty state if needed
-                if (
-                    taskListAllUl &&
-                    taskListAllUl.children.length === 0 &&
-                    tasksEmptyStateAll
-                ) {
-                    tasksEmptyStateAll.style.display = "block";
-                }
-                if (
-                    taskListTodayUl &&
-                    taskListTodayUl.children.length === 0 &&
-                    tasksEmptyStateToday
-                ) {
-                    tasksEmptyStateToday.style.display = "block";
-                }
-            } else {
-                alert(
-                    `Error deleting task: ${
-                        result.message || response.statusText || "Unknown error"
-                    }`
-                );
-                console.error("Failed to delete task:", result);
+    //             // Check if the list is now empty and show empty state if needed
+    //             if (
+    //                 taskListAllUl &&
+    //                 taskListAllUl.children.length === 0 &&
+    //                 tasksEmptyStateAll
+    //             ) {
+    //                 tasksEmptyStateAll.style.display = "block";
+    //             }
+    //             if (
+    //                 taskListTodayUl &&
+    //                 taskListTodayUl.children.length === 0 &&
+    //                 tasksEmptyStateToday
+    //             ) {
+    //                 tasksEmptyStateToday.style.display = "block";
+    //             }
+    //         } else {
+    //             alert(
+    //                 `Error deleting task: ${
+    //                     result.message || response.statusText || "Unknown error"
+    //                 }`
+    //             );
+    //             console.error("Failed to delete task:", result);
+    //         }
+    //     } catch (error) {
+    //         alert(`Error deleting task: ${error.message}`);
+    //         console.error("Network or other error during delete:", error);
+    //     }
+    // }
+
+    // --- MAIN EVENT HANDLER for all task list actions ---
+    function setupTaskListEventListeners(taskListElement) {
+        if (!taskListElement) return;
+
+        taskListElement.addEventListener("click", async (e) => {
+            const taskItem = e.target.closest(".task-item");
+            if (!taskItem) return;
+
+            const taskId = taskItem.dataset.taskId;
+            const fullApiUrl = `${apiBaseUrl}/tasks/${taskId}/delete`;
+            const csrfTokenMeta = document.querySelector(
+                'meta[name="csrf-token"]'
+            );
+            const csrfToken = csrfTokenMeta
+                ? csrfTokenMeta.getAttribute("content")
+                : null;
+
+            // --- Handle Initial Delete Button ("trash can") Click ---
+            if (e.target.closest(".delete-btn")) {
+                e.preventDefault();
+                // Store original HTML and replace with confirmation UI
+                taskItem._originalHTML = taskItem.innerHTML;
+                taskItem.innerHTML = createInlineConfirmationHTML(taskId);
+                taskItem.classList.add("task-item--confirming-delete");
             }
-        } catch (error) {
-            alert(`Error deleting task: ${error.message}`);
-            console.error("Network or other error during delete:", error);
-        }
+
+            // --- Handle Cancel ("X") Button Click ---
+            else if (e.target.closest(".cancel-delete-btn")) {
+                e.preventDefault();
+                restoreTaskCard(taskItem);
+            }
+
+            // --- Handle Confirm ("✓") Button Click ---
+            else if (e.target.closest(".confirm-delete-btn")) {
+                e.preventDefault();
+                const confirmButton = e.target.closest(".confirm-delete-btn");
+                confirmButton.disabled = true;
+                confirmButton.innerHTML =
+                    '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const response = await fetch(fullApiUrl, {
+                        method: "DELETE",
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken,
+                            Accept: "application/json",
+                        },
+                    });
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        // On SUCCESS, animate and remove the task item
+                        taskItem.style.transition =
+                            "opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease";
+                        taskItem.style.opacity = "0";
+                        taskItem.style.maxHeight = "0px";
+                        taskItem.style.margin = "0";
+                        taskItem.style.padding = "0";
+                        setTimeout(() => {
+                            taskItem.remove();
+                            // Check if the list is now empty
+                            if (taskListElement.children.length === 0) {
+                                const emptyStateElement =
+                                    taskListElement.id === "taskListToday"
+                                        ? tasksEmptyStateToday
+                                        : tasksEmptyStateAll;
+                                if (emptyStateElement)
+                                    emptyStateElement.style.display = "block";
+                            }
+                        }, 300);
+                    } else {
+                        // On FAILURE, show an error and restore the card
+                        alert(
+                            `Error: ${
+                                result.message || "Could not delete task."
+                            }`
+                        );
+                        restoreTaskCard(taskItem);
+                    }
+                } catch (error) {
+                    // On NETWORK ERROR, show an error and restore the card
+                    console.error("Error during delete request:", error);
+                    alert("A network error occurred. Please try again.");
+                    restoreTaskCard(taskItem);
+                }
+            }
+            // You can add handlers for other buttons like '.edit-btn' here using 'else if'
+        });
     }
 
     // --- Edit Task ---
@@ -684,12 +774,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    if (taskListAllUl) {
-        taskListAllUl.addEventListener("click", taskCompleted);
-        taskListAllUl.addEventListener("click", deleteTask);
-    }
-    if (taskListTodayUl) {
-        taskListTodayUl.addEventListener("click", taskCompleted);
-        taskListTodayUl.addEventListener("click", deleteTask);
-    }
+    setupTaskListEventListeners(taskListTodayUl);
+    setupTaskListEventListeners(taskListAllUl);
+
+    // if (taskListAllUl) {
+    //     taskListAllUl.addEventListener("click", taskCompleted);
+    //     taskListAllUl.addEventListener("click", deleteTask);
+    // }
+    // if (taskListTodayUl) {
+    //     taskListTodayUl.addEventListener("click", taskCompleted);
+    //     taskListTodayUl.addEventListener("click", deleteTask);
+    // }
 });
