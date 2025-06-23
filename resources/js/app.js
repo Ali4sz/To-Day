@@ -229,13 +229,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Utility to escape HTML ---
     function escapeHTML(str) {
         if (str === null || str === undefined) return "";
-        return String(str).replace(/[&<>"']/g, function (match) {
+        return String(str).replace(/[&<>"']/g, (match) => {
             return {
-                "&": "&", // Corrected escape for &
-                "<": "<",
-                ">": ">",
-                '"': '"',
-                "'": "'",
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
             }[match];
         });
     }
