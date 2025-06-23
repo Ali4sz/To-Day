@@ -690,9 +690,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             Accept: "application/json",
                         },
                     });
-                    const result = await response.json();
+                    // const result = await response.json();
 
-                    if (response.ok && result.success) {
+                    if (response.ok) {
                         // On SUCCESS, animate and remove the task item
                         taskItem.style.transition =
                             "opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease";
@@ -714,6 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }, 300);
                     } else {
                         // On FAILURE, show an error and restore the card
+                        const result = await response.json();
                         alert(
                             `Error: ${
                                 result.message || "Could not delete task."
