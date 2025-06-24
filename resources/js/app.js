@@ -737,6 +737,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // --- Get Modal Elements (do this once at the top) ---
+    const editTaskModal = document.getElementById("editTaskModal");
+    const editTaskForm = document.getElementById("editTaskForm");
+    const editTaskCloseBtn = document.querySelector(".modal-close-btn");
+    const saveTaskChangesBtn = document.getElementById("saveTaskChangesBtn");
+    const editTaskMessageArea = document.getElementById("editTaskMessageArea");
+    // Input fields
+    const editTaskNameInput = document.getElementById("editTaskName");
+    const editTaskDueDateInput = document.getElementById("editTaskDueDate");
+    const editTaskPriorityInput = document.getElementById("editTaskPriority");
+    const editTaskIsForTodayInput =
+        document.getElementById("editTaskIsForToday");
+
     // --- Function to open and populate the modal ---
     async function openEditModal(taskId) {
         editTaskModal.classList.remove("hidden");
@@ -759,8 +772,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // The datetime-local input needs a specific format: YYYY-MM-DDTHH:mm
             // The server provides a full ISO 8601 string, so we slice it.
-            if (task.due_date) {
-                editTaskDueDateInput.value = task.due_date.slice(0, 16);
+            if (task.display_due_string) {
+                editTaskDueDateInput.value = task.display_due_string.slice(
+                    0,
+                    16
+                );
             }
         } catch (error) {
             editTaskMessageArea.innerHTML = `<p class="error-message">${error.message}</p>`;
