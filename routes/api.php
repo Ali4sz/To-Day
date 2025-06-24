@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::get('tasks/all', [TaskController::class, 'getAllTasksData'])->name('tasks.all.data');
+Route::get('tasks/{task}', [TaskController::class, 'getAllTasksData'])->name('tasks.edit.data');
 Route::get('tasks/today', [TaskController::class, 'getTodaysTasksData'])->name('tasks.today.data');
 
 Route::patch('tasks/{task}/today', [TaskController::class, 'update'])->name('tasks.today.update');

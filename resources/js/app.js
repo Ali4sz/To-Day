@@ -728,9 +728,43 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert("A network error occurred. Please try again.");
                     restoreTaskCard(taskItem);
                 }
+            } else if (e.target.closest(".edit-btn")) {
+                e.preventDefault();
+                const taskId = e.target.closest(".task-item").dataset.taskId;
+                openEditModal(taskId);
             }
             // You can add handlers for other buttons like '.edit-btn' here using 'else if'
         });
+    }
+
+    // --- Function to open and populate the modal ---
+    async function openEditModal(taskId) {
+        editTaskModal.classList.remove("hidden");
+        editTaskForm.dataset.editingTaskId = taskId;
+        saveTaskChangesBtn.innerHTML = "Save Changes";
+        saveTaskChangesBtn.disabled = false;
+        editTaskMessageArea.innerHTML = "";
+        editTaskForm.reset();
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`);
+            if (!response.ok) throw new Error("Failed to fetch task data.");
+
+            const task = await response.json();
+
+            // Populate the form fields with the fetched data
+            editTaskNameInput.value = task.name;
+            editTaskPriorityInput.value = task.priority;
+            editTaskIsForTodayInput.checked = task.is_for_today;
+
+            // The datetime-local input needs a specific format: YYYY-MM-DDTHH:mm
+            // The server provides a full ISO 8601 string, so we slice it.
+            if (task.due_date) {
+                editTaskDueDateInput.value = task.due_date.slice(0, 16);
+            }
+        } catch (error) {
+            editTaskMessageArea.innerHTML = `<p class="error-message">${error.message}</p>`;
+        }
     }
 
     // --- Edit Task ---
