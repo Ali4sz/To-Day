@@ -766,7 +766,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const task = await response.json();
 
             // Populate the form fields with the fetched data
-            editTaskNameInput.value = task.name;
+            editTaskNameInput.value = task.task_name;
             editTaskPriorityInput.value = task.priority;
             editTaskIsForTodayInput.checked = task.is_for_today;
 
@@ -781,6 +781,11 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             editTaskMessageArea.innerHTML = `<p class="error-message">${error.message}</p>`;
         }
+    }
+
+    // --- Function to close the modal ---
+    function closeEditModal() {
+        editTaskModal.classList.add("hidden");
     }
 
     // --- Edit Task ---
