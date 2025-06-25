@@ -978,6 +978,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Enable the final delete button only when the user types "DELETE"
+    if (deleteConfirmationInput && confirmAccountDeleteBtn) {
+        deleteConfirmationInput.addEventListener("input", () => {
+            if (deleteConfirmationInput.value === "DELETE") {
+                confirmAccountDeleteBtn.disabled = false;
+            } else {
+                confirmAccountDeleteBtn.disabled = true;
+            }
+        });
+    }
+
     setupTaskListEventListeners(taskListTodayUl);
     setupTaskListEventListeners(taskListAllUl);
 
