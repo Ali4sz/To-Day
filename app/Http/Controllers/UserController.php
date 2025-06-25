@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -114,8 +115,26 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
-        //
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated.'], 401);
+        }
+
+        try {
+            // IMPORTANT: Delete associated data first!
+            // This assumes your Task model has a 'user_id' column.
+            Task::where('user_id', $user->id)->delete();
+
+            // Now, delete the user.
+            $user->delete();
+
+            return response()->json(['success' => true, 'message' => 'Account deleted successfully.']);
+        } catch (\Exception $e) {
+            // Log::error('Error deleting account for user ' . $user->id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred while deleting your account.'], 500);
+        }
     }
 }
