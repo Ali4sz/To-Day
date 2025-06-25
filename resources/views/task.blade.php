@@ -137,6 +137,7 @@
                 </section>
             </div> <!-- addTaskFormView END -->
 
+
             <!-- View for Settings -->
             <div id="settingsView" class="tasks-view">
                 <header class="tasks-page-header">
@@ -146,14 +147,55 @@
                     </h1>
                     <p class="tasks-page-subtitle">Customize your to-day experience.</p>
                 </header>
-                <section>
-                    <p style="text-align: center; padding: 20px; color: #777;">Settings content will go here.</p>
+                <section class="settings-section">
 
+                    <!-- Logout Button -->
                     <div class="setting-item">
+                        <h3>Account</h3>
+                        <p>Log out of your current session.</p>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="setting-button btn-logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
 
+                    <hr class="setting-divider">
+
+                    <!-- Delete Account Button -->
+                    <div class="setting-item danger-zone">
+                        <h3>Danger Zone</h3>
+                        <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                        <button id="deleteAccountBtn" class="setting-button btn-danger">
+                            <i class="fas fa-trash-alt"></i> Delete My Account
+                        </button>
                     </div>
 
                 </section>
+            </div>
+
+            <!-- Delete Account Confirmation Modal -->
+            <div id="deleteAccountModal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <button class="modal-close-btn" id="closeDeleteModalBtn" aria-label="Close modal">×</button>
+                    <h2>Are you absolutely sure?</h2>
+                    <p>This action is irreversible. All of your tasks will be permanently deleted. To confirm, please
+                        type <strong>DELETE</strong> in the box below.</p>
+
+                    <div id="deleteAccountMessageArea" class="my-3"></div>
+
+                    <div class="form-group">
+                        <label for="deleteConfirmationInput">Type DELETE to confirm</label>
+                        <input type="text" id="deleteConfirmationInput" autocomplete="off">
+                    </div>
+
+                    <div class="form-actions-group">
+                        <button class="tasks-add-button btn-danger" id="confirmAccountDeleteBtn" disabled>
+                            I understand the consequences, delete my account
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </div> <!-- tasks-page-content-wrapper END -->

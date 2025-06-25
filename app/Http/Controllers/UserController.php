@@ -77,6 +77,16 @@ class UserController extends Controller
         return redirect()->route('index');
     }
 
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home'); // Redirect to the homepage after logout
+    }
+
     /**
      * Display the specified resource.
      */

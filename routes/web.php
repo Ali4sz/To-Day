@@ -17,6 +17,7 @@ Route::get('/login', function () {
     return view('register.login');
 })->name('logingo');
 Route::post('/login', [UserController::class, 'login'])->name('login');
+Route::post('/tasks/settings', [UserController::class, 'logout'])->name('logout');
 
 // Route::get('/tasks', function () {
 //     return view('task');
