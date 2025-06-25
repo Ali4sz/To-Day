@@ -958,6 +958,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (deleteAccountModal) deleteAccountModal.classList.remove("hidden");
     }
 
+    function closeDeleteAccountModal() {
+        if (deleteAccountModal) deleteAccountModal.classList.add("hidden");
+    }
+
+    // --- Event Listeners for Delete Account Flow ---
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener("click", openDeleteAccountModal);
+    }
+    if (closeDeleteModalBtn) {
+        closeDeleteModalBtn.addEventListener("click", closeDeleteAccountModal);
+    }
+    if (deleteAccountModal) {
+        // Close by clicking the overlay background
+        deleteAccountModal.addEventListener("click", (e) => {
+            if (e.target === deleteAccountModal) {
+                closeDeleteAccountModal();
+            }
+        });
+    }
+
     setupTaskListEventListeners(taskListTodayUl);
     setupTaskListEventListeners(taskListAllUl);
 
