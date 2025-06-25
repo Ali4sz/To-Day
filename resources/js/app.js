@@ -734,6 +734,51 @@ document.addEventListener("DOMContentLoaded", () => {
                 openEditModal(taskId);
             }
             // You can add handlers for other buttons like '.edit-btn' here using 'else if'
+
+            // --- NEW: Handle Checkbox Click for Task Completion ---
+            else if (e.target.closest(".task-complete-checkbox")) {
+                const checkbox = e.target;
+                const isCompleted = checkbox.checked;
+
+                // Disable checkbox to prevent rapid clicking while request is processing
+                checkbox.disabled = true;
+
+                try {
+                    const response = await fetch(
+                        `${apiBaseUrl}/tasks/${taskId}/today`,
+                        {
+                            method: "PATCH",
+                            headers: {
+                                "X-CSRF-TOKEN": csrfToken,
+                                "Content-Type": "application/json",
+                                Accept: "application/json",
+                            },
+                            body: JSON.stringify({
+                                is_completed: isCompleted,
+                            }),
+                        }
+                    );
+
+                    // const result = await response.json();
+                    if (!response.ok) {
+                        // If server-side update fails, revert the checkbox state
+                        throw new Error(
+                            console.error("Failed to update task.")
+                        );
+                    }
+
+                    // On success, visually update the task item
+                    taskItem.classList.toggle("completed", isCompleted);
+                } catch (error) {
+                    console.error("Error updating task status:", error);
+                    alert(`Error: ${error.message}`);
+                    // IMPORTANT: Revert checkbox to its previous state on any failure
+                    checkbox.checked = !isCompleted;
+                } finally {
+                    // ALWAYS re-enable the checkbox
+                    checkbox.disabled = false;
+                }
+            }
         });
     }
 
@@ -768,15 +813,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // Populate the form fields with the fetched data
             editTaskNameInput.value = task.task_name;
             editTaskPriorityInput.value = task.priority;
-            editTaskIsForTodayInput.checked = task.is_for_today;
+            // editTaskIsForTodayInput.checked = task.is_for_today;
 
             // The datetime-local input needs a specific format: YYYY-MM-DDTHH:mm
             // The server provides a full ISO 8601 string, so we slice it.
-            if (task.display_due_string) {
-                editTaskDueDateInput.value = task.display_due_string.slice(
-                    0,
-                    16
-                );
+            if (task.due_date) {
+                editTaskDueDateInput.value = task.due_date.slice(0, 16);
             }
         } catch (error) {
             editTaskMessageArea.innerHTML = `<p class="error-message">${error.message}</p>`;
@@ -787,6 +829,68 @@ document.addEventListener("DOMContentLoaded", () => {
     function closeEditModal() {
         editTaskModal.classList.add("hidden");
     }
+
+    // --- Handle Modal Form Submission ---
+    editTaskForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const taskId = editTaskForm.dataset.editingTaskId;
+        const originalButtonHTML = saveTaskChangesBtn.innerHTML;
+
+        saveTaskChangesBtn.disabled = true;
+        saveTaskChangesBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        editTaskMessageArea.innerHTML = "";
+
+        const formData = new FormData(editTaskForm);
+        // Convert FormData to a plain object for sending as JSON
+        const data = Object.fromEntries(formData.entries());
+        // Manually handle checkbox value
+        data.isForToday = editTaskIsForTodayInput.checked;
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
+                method: "PUT",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            if (!response.ok)
+                throw new Error(result.message || "Update failed.");
+
+            if (result.success && result.task) {
+                // Find the original task item in the DOM
+                const taskItemToUpdate = document.querySelector(
+                    `.task-item[data-task-id="${taskId}"]`
+                );
+                if (taskItemToUpdate) {
+                    // Re-render the task card with the updated data
+                    const newHTML = createTaskListItemHTML(result.task);
+                    // We replace the innerHTML instead of the whole element to keep the `li` wrapper.
+                    taskItemToUpdate.innerHTML = newHTML;
+                }
+                closeEditModal();
+            }
+        } catch (error) {
+            editTaskMessageArea.innerHTML = `<p class="error-message">${error.message}</p>`;
+        } finally {
+            saveTaskChangesBtn.disabled = false;
+            saveTaskChangesBtn.innerHTML = originalButtonHTML;
+        }
+    });
+
+    // --- Event listeners to close the modal ---
+    editTaskCloseBtn.addEventListener("click", closeEditModal);
+    editTaskModal.addEventListener("click", (e) => {
+        // Close the modal if the overlay (the background) is clicked
+        if (e.target === editTaskModal) {
+            closeEditModal();
+        }
+    });
 
     // --- Edit Task ---
     async function editTask(event) {

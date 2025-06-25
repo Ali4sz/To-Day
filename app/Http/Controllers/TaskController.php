@@ -128,7 +128,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+        return response()->json($task);
     }
 
     /**
@@ -157,6 +157,8 @@ class TaskController extends Controller
             ], 500); // Internal Server Error
         }
     }
+
+    public function editTask() {}
 
     /**
      * Remove the specified resource from storage.
