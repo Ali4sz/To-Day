@@ -185,11 +185,6 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="editTaskIsForToday">Mark for Today's List?</label>
-                    <input type="checkbox" id="editTaskIsForToday" name="isForToday" value="1">
-                </div>
-
                 <div class="form-actions-group">
                     <button type="submit" class="tasks-add-button" id="saveTaskChangesBtn">
                         Save Changes
