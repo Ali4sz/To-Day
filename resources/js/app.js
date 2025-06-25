@@ -857,8 +857,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const formData = new FormData(editTaskForm);
         // Convert FormData to a plain object for sending as JSON
         const data = Object.fromEntries(formData.entries());
-        // Manually handle checkbox value
-        data.isForToday = editTaskIsForTodayInput.checked;
 
         try {
             const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
