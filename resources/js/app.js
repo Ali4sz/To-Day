@@ -830,6 +830,15 @@ document.addEventListener("DOMContentLoaded", () => {
         editTaskModal.classList.add("hidden");
     }
 
+    // --- Event listeners to close the modal ---
+    editTaskCloseBtn.addEventListener("click", closeEditModal);
+    editTaskModal.addEventListener("click", (e) => {
+        // Close the modal if the overlay (the background) is clicked
+        if (e.target === editTaskModal) {
+            closeEditModal();
+        }
+    });
+
     // --- Handle Modal Form Submission ---
     editTaskForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -841,6 +850,10 @@ document.addEventListener("DOMContentLoaded", () => {
             '<i class="fas fa-spinner fa-spin"></i> Saving...';
         editTaskMessageArea.innerHTML = "";
 
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta
+            ? csrfTokenMeta.getAttribute("content")
+            : null;
         const formData = new FormData(editTaskForm);
         // Convert FormData to a plain object for sending as JSON
         const data = Object.fromEntries(formData.entries());
@@ -849,7 +862,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: {
                     "X-CSRF-TOKEN": csrfToken,
                     "Content-Type": "application/json",
@@ -880,15 +893,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } finally {
             saveTaskChangesBtn.disabled = false;
             saveTaskChangesBtn.innerHTML = originalButtonHTML;
-        }
-    });
-
-    // --- Event listeners to close the modal ---
-    editTaskCloseBtn.addEventListener("click", closeEditModal);
-    editTaskModal.addEventListener("click", (e) => {
-        // Close the modal if the overlay (the background) is clicked
-        if (e.target === editTaskModal) {
-            closeEditModal();
         }
     });
 

@@ -158,7 +158,44 @@ class TaskController extends Controller
         }
     }
 
-    public function editTask() {}
+    public function editTask(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'taskName' => 'required|string|max:255',
+            'dueDate' => 'nullable|date',
+            'priority' => 'required|in:low,medium,high',
+        ]);
+
+        try {
+            // Update the task's properties
+            $task->task_name = $validated['taskName'];
+            $task->due_date = $validated['dueDate'];
+            $task->priority = $validated['priority'];
+
+            $task->save(); // Save the changes to the database
+
+            // Return a success response with the UPDATED task object,
+            // including all the computed properties for the frontend.
+            return response()->json([
+                'success' => true,
+                'message' => 'Task updated successfully!',
+                'task' => [ // Resend the data in the format the frontend expects
+                    'id' => $task->id,
+                    'name' => $task->name,
+                    'priority' => $task->priority,
+                    'priority_label' => $task->priority_label,
+                    'is_completed' => $task->is_completed,
+                    'display_due_string' => $task->display_due_string,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // Log::error('Error updating task: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update task. Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
