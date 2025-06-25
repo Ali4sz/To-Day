@@ -936,6 +936,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // --- Get Delete Account Modal Elements ---
+    const deleteAccountModal = document.getElementById("deleteAccountModal");
+    const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+    const closeDeleteModalBtn = document.getElementById("closeDeleteModalBtn");
+    const confirmAccountDeleteBtn = document.getElementById(
+        "confirmAccountDeleteBtn"
+    );
+    const deleteConfirmationInput = document.getElementById(
+        "deleteConfirmationInput"
+    );
+    const deleteAccountMessageArea = document.getElementById(
+        "deleteAccountMessageArea"
+    );
+
+    // --- Functions to control the delete modal ---
+    function openDeleteAccountModal() {
+        deleteAccountMessageArea.innerHTML = "";
+        deleteConfirmationInput.value = "";
+        confirmAccountDeleteBtn.disabled = true;
+        if (deleteAccountModal) deleteAccountModal.classList.remove("hidden");
+    }
+
     setupTaskListEventListeners(taskListTodayUl);
     setupTaskListEventListeners(taskListAllUl);
 
