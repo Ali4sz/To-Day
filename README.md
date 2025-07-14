@@ -6,7 +6,7 @@ A modern, clean, and animated landing page for a personal task manager applicati
 
 ---
 
-![Project Screenshot](https://via.placeholder.com/1200x600.png?text=Add+a+Screenshot+of+Your+Landing+Page+Here)
+![A preview of the To-Day landing page](assets/screenshot.png)
 *A preview of the To-Day landing page, showcasing the hero section and features.*
 
 ## About The Project
@@ -38,3 +38,13 @@ This project was built using fundamental web technologies, with no external fram
     *   Intersection Observer API
 
 ---
+
+## License
+
+Distributed under the **Apache 2.0 License**. See `LICENSE.txt` for more information.
+
+---
+
+## Contact
+
+Ali Samra - ali.mon.wo20@gmail.com
