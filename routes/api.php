@@ -20,4 +20,3 @@ Route::patch('tasks/{task}', [TaskController::class, 'editTask'])->name('tasks.e
 
 
 Route::delete('tasks/{task}/delete', [TaskController::class, 'destroy'])->name('tasks.today.destroy');
-Route::delete('/tasks/account/delete', [UserController::class, 'destroy'])->name('user.delete');

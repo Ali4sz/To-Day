@@ -16,8 +16,13 @@
             </ul>
         </nav>
         <div class="navbar-extra">
-            <div class="theme-toggle">
+            {{-- <div class="theme-toggle">
                 ☀️
+            </div> --}}
+            <div class="navbar-brand">
+                @auth
+                <a href="{{ route('index') }}" class="logo">Back to <span class="logo-accent" >task!</span></a>
+                @endauth
             </div>
         </div>
     </header>

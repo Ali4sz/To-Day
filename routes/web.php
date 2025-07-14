@@ -9,15 +9,15 @@ Route::get('/', function () {
 })->name('home');
 
 // Signup Routes
-Route::get('/signup', [UserController::class, 'create'])->name('signupgo');
-Route::post('/signup', [UserController::class, 'store'])->name('signup');
+Route::get('/signup', [UserController::class, 'create'])->middleware('guest')->name('signupgo');
+Route::post('/signup', [UserController::class, 'store'])->middleware('guest')->name('signup');
 
 // Login Routes
 Route::get('/login', function () {
     return view('register.login');
-})->name('logingo');
-Route::post('/login', [UserController::class, 'login'])->name('login');
-Route::post('/tasks/settings', [UserController::class, 'logout'])->name('logout');
+})->middleware('guest')->name('logingo');
+Route::post('/login', [UserController::class, 'login'])->middleware('guest')->name('login');
+Route::post('/tasks/settings', [UserController::class, 'logout'])->middleware('auth')->name('logout');
 
 // Route::get('/tasks', function () {
 //     return view('task');
@@ -27,6 +27,8 @@ Route::post('/tasks/settings', [UserController::class, 'logout'])->name('logout'
 // For the main page, allowing an optional section parameter
 Route::get('/tasks/{section?}', [TaskController::class, 'index'])
     ->where('section', '(today|all|add|settings)') // Validate section
-    ->name('index');
+    ->middleware('auth')->name('index');
 
-Route::post('/tasks/store-ajax', [TaskController::class, 'store'])->name('store');
+Route::post('/tasks/store-ajax', [TaskController::class, 'store'])->middleware('auth')->name('store');
+
+Route::delete('account/delete', [UserController::class, 'destroy'])->middleware('auth')->name('user.delete');

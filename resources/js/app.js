@@ -397,6 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "X-CSRF-TOKEN": csrfToken,
                     "Content-Type": "application/json",
                     Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
                 },
                 body: JSON.stringify({ is_completed: isCompleted }),
             });
@@ -467,6 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     headers: {
                         "X-CSRF-TOKEN": csrfToken,
                         Accept: "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
                     },
                     body: formData,
                 });
@@ -688,6 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: {
                             "X-CSRF-TOKEN": csrfToken,
                             Accept: "application/json",
+                            "X-Requested-With": "XMLHttpRequest",
                         },
                     });
                     // const result = await response.json();
@@ -752,6 +755,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 "X-CSRF-TOKEN": csrfToken,
                                 "Content-Type": "application/json",
                                 Accept: "application/json",
+                                "X-Requested-With": "XMLHttpRequest",
                             },
                             body: JSON.stringify({
                                 is_completed: isCompleted,
@@ -881,7 +885,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (taskItemToUpdate) {
                     // Re-render the task card with the updated data
                     const newHTML = createTaskListItemHTML(result.task);
-                    // We replace the innerHTML instead of the whole element to keep the `li` wrapper.
+                    // replace the innerHTML instead of the whole element to keep the `li` wrapper.
                     taskItemToUpdate.innerHTML = newHTML;
                 }
                 closeEditModal();
@@ -928,6 +932,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "X-CSRF-TOKEN": csrfToken,
                 "Content-type": "application/json",
                 Accept: "application/json",
+                "X-Requested-With": "XMLHttpRequest",
             },
         });
         const result = await response.json();
@@ -985,6 +990,53 @@ document.addEventListener("DOMContentLoaded", () => {
                 confirmAccountDeleteBtn.disabled = false;
             } else {
                 confirmAccountDeleteBtn.disabled = true;
+            }
+        });
+    }
+
+    // Handle the final click to delete the account
+    if (confirmAccountDeleteBtn) {
+        confirmAccountDeleteBtn.addEventListener("click", async () => {
+            confirmAccountDeleteBtn.disabled = true;
+            confirmAccountDeleteBtn.innerHTML =
+                '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            deleteAccountMessageArea.innerHTML = "";
+            const csrfTokenMeta = document.querySelector(
+                'meta[name="csrf-token"]'
+            );
+            const csrfToken = csrfTokenMeta
+                ? csrfTokenMeta.getAttribute("content")
+                : null;
+
+            try {
+                const response = await fetch(
+                    "http://localhost/dashboard/To-Day/public/account/delete",
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken,
+                            Accept: "application/json",
+                            "X-Requested-With": "XMLHttpRequest",
+                        },
+                    }
+                );
+
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message || "Failed to delete account."
+                    );
+                }
+
+                // On success, alert the user and redirect to homepage
+                alert("Your account has been successfully deleted.");
+                window.location.href =
+                    "http://localhost/dashboard/To-Day/public"; // Redirect to home
+            } catch (error) {
+                deleteAccountMessageArea.innerHTML = `<p class="error-message">${error.message}</p>`;
+                confirmAccountDeleteBtn.disabled = false;
+                confirmAccountDeleteBtn.innerHTML =
+                    "I understand the consequences, delete my account";
             }
         });
     }
