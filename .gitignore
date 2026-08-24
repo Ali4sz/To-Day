@@ -6,6 +6,9 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+.plans
+.reports
+.ref
 /.fleet
 /.idea
 /.nova
