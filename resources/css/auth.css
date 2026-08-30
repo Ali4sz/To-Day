@@ -1,0 +1,380 @@
+/* --- Auth pages (login & signup) styles --- */
+
+body.dark-mode .login-page-body {
+    background-color: #232b30; /* Darker than navbar dark */
+    /* background: linear-gradient(135deg, #2c3e50 0%, #232b30 100%); */
+}
+
+body.dark-mode .login-card {
+    background-color: #34495e; /* Consistent with navbar dark */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .login-header .login-logo,
+body.dark-mode .login-header h2 {
+    color: #ecf0f1;
+}
+
+body.dark-mode .login-header p,
+body.dark-mode .login-form .form-group label,
+body.dark-mode .form-options .remember-me,
+body.dark-mode .login-footer {
+    color: #bdc3c7;
+}
+
+body.dark-mode .login-form .form-group input {
+    color: #ecf0f1;
+    border-bottom-color: #566573;
+}
+
+body.dark-mode .login-form .form-group input:focus,
+body.dark-mode .login-form .form-group input:valid {
+    border-bottom-color: var(--complementary-color);
+}
+
+body.dark-mode .login-form .form-group input:focus + label,
+body.dark-mode .login-form .form-group input:valid + label {
+    color: var(--complementary-color);
+}
+body.dark-mode .login-form .form-group .icon {
+    color: #7f8c8d;
+}
+body.dark-mode .login-form .form-group input:focus + label .icon,
+body.dark-mode .login-form .form-group input:valid + label .icon {
+    color: var(--complementary-color);
+}
+
+/* Dark Mode for Error Messages */
+body.dark-mode .form-error-message {
+    color: #f8d7da; /* Lighter text for dark background */
+    background-color: #523030; /* Darker, desaturated red background */
+    border-color: #843534; /* Slightly darker border for dark mode */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* Slightly adjusted shadow for dark bg */
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Login Page Specific Styles */
+.login-page-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f0f2f5; /* A very light neutral background */
+    /* Or use a subtle gradient like:
+    background: linear-gradient(135deg, #f4f7f6 0%, #e9edf0 100%); */
+    overflow: hidden; /* For background shapes */
+    position: relative; /* For background shapes */
+}
+
+/* Abstract Background Shapes */
+.shape-blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    filter: blur(50px); /* Soft blur */
+    animation: moveBlob 20s infinite alternate ease-in-out;
+    z-index: 0;
+}
+
+.shape-blob.one {
+    width: 400px;
+    height: 400px;
+    background-color: var(--complementary-color);
+    top: -100px;
+    left: -150px;
+    animation-duration: 25s;
+}
+
+.shape-blob.two {
+    width: 500px;
+    height: 500px;
+    background-color: #a7c5eb; /* A soft blue, complementary to terracotta */
+    bottom: -150px;
+    right: -200px;
+    animation-duration: 30s;
+    animation-delay: -5s;
+}
+.shape-blob.three {
+    width: 300px;
+    height: 300px;
+    background-color: #f0dbaf; /* A soft warm yellow */
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    animation-duration: 20s;
+    animation-delay: -10s;
+    opacity: 0.1;
+}
+
+@keyframes moveBlob {
+    0% {
+        transform: scale(1) translate(0px, 0px);
+    }
+    50% {
+        transform: scale(1.2) translate(50px, -30px);
+    }
+    100% {
+        transform: scale(1) translate(-20px, 30px);
+    }
+}
+
+.login-container {
+    position: relative; /* To keep content above blobs */
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    background-color: var(--primary-color); /* White */
+    padding: 40px 45px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeInScaleUp 0.7s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+}
+
+.signup-card {
+    background-color: var(--primary-color); /* White */
+    padding: 40px 45px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeInScaleUp 0.7s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+    padding: 40px 45px;
+    max-width: 420px; /* Example: slightly wider for more fields */
+}
+
+@keyframes fadeInScaleUp {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.login-header .login-logo {
+    text-decoration: none;
+    font-size: 2.8em;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.login-header .login-logo .logo-accent {
+    font-family: "Pacifico", cursive;
+    color: var(--complementary-color);
+    font-weight: 400;
+    margin-left: -5px;
+}
+
+.login-header h2 {
+    font-size: 1.8em;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.login-header p {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.login-form .form-group {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.login-form .form-group .icon {
+    margin-right: 8px;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.login-form .form-group input {
+    width: 100%;
+    padding: 12px 12px 12px 10px; /* Make space for icon if placing inside */
+    border: none;
+    border-bottom: 2px solid #ddd;
+    background-color: transparent;
+    font-size: 1em;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s ease;
+    position: relative;
+    z-index: 1; /* Above label initially */
+}
+
+.login-form .form-group label {
+    position: absolute;
+    top: 12px;
+    left: 0px; /* Align with input padding */
+    font-size: 1em;
+    color: #999;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 0; /* Below input initially */
+}
+
+.login-form .form-group input:focus,
+.login-form .form-group input:valid {
+    /* :valid works if 'required' is present */
+    border-bottom-color: var(--complementary-color);
+}
+
+.login-form .form-group input:focus + label,
+.login-form .form-group input:valid + label {
+    top: -18px;
+    left: 0;
+    font-size: 0.8em;
+    color: var(--complementary-color);
+}
+.login-form .form-group input:focus + label .icon,
+.login-form .form-group input:valid + label .icon {
+    color: var(--complementary-color);
+}
+
+/* Optional input line animation */
+.input-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: var(--complementary-color);
+    transition: width 0.3s ease;
+}
+.login-form .form-group input:focus ~ .input-line,
+.login-form .form-group input:valid ~ .input-line {
+    width: 100%;
+}
+/* Form Error Message Styling */
+.form-error-message {
+    display: block; /* Ensure it takes its own line */
+    padding: 12px 18px; /* Good padding */
+    margin-top: 5px; /* Space from the element above (if any) */
+    margin-bottom: 15px; /* Space from the element below */
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9em; /* Slightly smaller than regular text but readable */
+    font-weight: 500; /* Slightly bolder to draw attention */
+    line-height: 1.4;
+    color: #721c24; /* A standard dark red for error text */
+    background-color: #f8d7da; /* A light pink/red background */
+    border: 1px solid #f5c6cb; /* A slightly darker pink/red border */
+    border-radius: 8px; /* Consistent with other rounded corners */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    text-align: left; /* Default, but good to be explicit */
+}
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 0.9em;
+}
+
+.remember-me {
+    color: #555;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.remember-me input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: var(--complementary-color); /* Modern way to color checkbox */
+}
+
+.forgot-password {
+    color: var(--complementary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+}
+.forgot-password:hover {
+    color: var(--complementary-hover);
+    text-decoration: underline;
+}
+
+.login-button {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent-gradient);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(213, 122, 102, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(213, 122, 102, 0.4);
+}
+.login-button .fa-arrow-right {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+.login-button:hover .fa-arrow-right {
+    transform: translateX(5px);
+}
+
+.login-footer {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.login-footer .signup-link {
+    color: var(--complementary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-footer .signup-link:hover {
+    color: var(--complementary-hover);
+    text-decoration: underline;
+}
+
+/* Specific styling for the terms and agreement section if needed */
+.terms-agreement {
+    text-align: left; /* Align text to the left for readability */
+    margin-bottom: 25px; /* Adjust spacing */
+    font-size: 0.85em;
+}
+
+.terms-agreement .remember-me {
+    /* Reusing class name here, but context is terms */
+    line-height: 1.4;
+}
+
+.inline-link {
+    color: var(--complementary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+.inline-link:hover {
+    text-decoration: underline;
+    color: var(--complementary-hover);
+}

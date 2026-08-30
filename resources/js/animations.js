@@ -1,203 +1,128 @@
-// --- Existing JavaScript for number count-up (metric-value) ---
-const metricValues = document.querySelectorAll(".metric-value");
-const heroSection = document.querySelector(".hero-section");
-const animatedElements = document.querySelectorAll(
-    ".benefit-card, .chart-card, .about-block"
-);
-if (metricValues.length > 0) {
-    // Check if elements exist
-    const animateValue = (element, start, end, duration) => {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min(
-                (timestamp - startTimestamp) / duration,
-                1
-            );
-            element.textContent = Math.floor(
-                progress * (end - start) + start
-            ).toLocaleString();
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            }
-        };
-        window.requestAnimationFrame(step);
-    };
+// --- Stargazing hero: twinkling star field ---
+// Populates the dedicated .hero-star-field container with two kinds of stars:
+//   - many small, dim "ambient" stars, and
+//   - a sparse set of brighter, slower "featured" stars.
+// All appearance (color, glow, animation) lives in CSS; this script only
+// supplies per-star variation through CSS custom properties. It exits quietly
+// on pages without a star field and guards against running twice.
+const heroStarField = document.querySelector(".hero-star-field");
 
-    const observerOptionsCountUp = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.1,
-    };
+if (heroStarField && !heroStarField.dataset.starsGenerated) {
+    heroStarField.dataset.starsGenerated = "true";
 
-    const observerCallbackCountUp = (entries, observer) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                const element = entry.target;
-                const targetValue = parseInt(
-                    element.getAttribute("data-target"),
-                    10
-                );
-                if (
-                    !isNaN(targetValue) &&
-                    !element.classList.contains("has-animated")
-                ) {
-                    // Avoid re-animating
-                    animateValue(element, 0, targetValue, 2000);
-                    element.classList.add("has-animated"); // Mark as animated
-                }
-                // Optionally unobserve if you only want it to animate once per page load
-                // and not if it scrolls out and back in (unless page reloads)
-                // For numbers, usually once is enough.
-                observer.unobserve(element);
-            }
-        });
-    };
-
-    const countUpObserver = new IntersectionObserver(
-        observerCallbackCountUp,
-        observerOptionsCountUp
+    // Keep density proportional to the viewport so small screens stay calm and
+    // performant.
+    const viewportWidth = window.innerWidth || 1200;
+    const ambientCount = Math.max(
+        50,
+        Math.min(130, Math.round(viewportWidth / 11))
+    );
+    const featuredCount = Math.max(
+        4,
+        Math.min(9, Math.round(viewportWidth / 180))
     );
 
-    metricValues.forEach((valueEl) => {
-        valueEl.textContent = "0";
-        countUpObserver.observe(valueEl);
-    });
-}
-// --- End of number count-up ---
+    // A soft rectangular zone behind the main copy where stars are thinned out
+    // so the heading, subtitle, and CTA stay the focus.
+    const calmZone = { topMin: 12, topMax: 62, leftMin: 22, leftMax: 78 };
+    const inCalmZone = (top, left) =>
+        top >= calmZone.topMin &&
+        top <= calmZone.topMax &&
+        left >= calmZone.leftMin &&
+        left <= calmZone.leftMax;
 
-// --- NEW: IntersectionObserver for fade-in card animations ---
-const animatedCards = document.querySelectorAll(".benefit-card, .chart-card");
-
-if (animatedCards.length > 0) {
-    // Check if elements exist
-    const cardObserverOptions = {
-        root: null, // Animate relative to the viewport
-        rootMargin: "0px",
-        threshold: 0.1, // Trigger when 10% of the card is visible
+    // Dawn-aware vertical falloff: stars are brightest in the dark upper sky
+    // and fade toward the warm peach horizon. `top` is in percent (2-70).
+    const dawnFalloff = (top) => {
+        const skyTop = 2;
+        const skyBottom = 70;
+        const depth = (top - skyTop) / (skyBottom - skyTop); // 0 at top, 1 at bottom
+        return Math.max(0.25, 1 - depth * 0.75);
     };
 
-    const cardObserverCallback = (entries, observer) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target); // Stop observing once animation is triggered
+    // Pick a position. Featured stars are restricted to the darker upper sky
+    // (top ~2-42%). Ambient stars use an upper-biased distribution so the
+    // dawn gradient has more stars above and fewer, fainter stars near the
+    // horizon — a smooth falloff, not a hard cutoff. Stars are kept inside
+    // safe margins so their glow is not clipped, and out of the mountain band.
+    const pickPosition = (isFeatured) => {
+        let top = 0;
+        let left = 0;
+        for (let attempt = 0; attempt < 2; attempt++) {
+            if (isFeatured) {
+                // Upper ~40-42% only, biased toward the very top.
+                top = 2 + 40 * Math.pow(Math.random(), 1.3);
+            } else {
+                // Upper-biased: Math.pow skews the uniform distribution toward 0,
+                // so more ambient stars land in the upper sky.
+                top = 2 + 68 * Math.pow(Math.random(), 1.5);
             }
-        });
+            left = 1 + Math.random() * 98; // 1% - 99% from the left
+            if (!inCalmZone(top, left)) break;
+        }
+        return { top, left };
     };
 
-    const fadeInCardObserver = new IntersectionObserver(
-        cardObserverCallback,
-        cardObserverOptions
-    );
+    const randomBetween = (min, max) => min + Math.random() * (max - min);
 
-    animatedCards.forEach((card) => {
-        fadeInCardObserver.observe(card);
-    });
-}
-
-if (animatedElements.length > 0) {
-    const elementObserverOptions = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.1, // Trigger when 10% of the element is visible
-    };
-
-    const elementObserverCallback = (entries, observer) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target); // Stop observing once animation is triggered
-            }
-        });
-    };
-
-    const fadeInElementObserver = new IntersectionObserver(
-        elementObserverCallback,
-        elementObserverOptions
-    );
-
-    animatedElements.forEach((el) => {
-        fadeInElementObserver.observe(el);
-    });
-}
-// --- End of fade-in card animations ---
-
-if (!heroSection) {
-    console.warn("Hero section not found for star animation.");
-} else {
-    const starBaseColor =
-        getComputedStyle(document.documentElement)
-            .getPropertyValue("--star-color")
-            .trim() ||
-        getComputedStyle(document.documentElement)
-            .getPropertyValue("--complementary-color")
-            .trim() ||
-        "#D4AAFF"; // Fallback star color
-    const starGlow =
-        getComputedStyle(document.documentElement)
-            .getPropertyValue("--star-glow-color")
-            .trim() ||
-        `rgba(${
-            starBaseColor.includes("rgba")
-                ? starBaseColor.match(/\d+/g).slice(0, 3).join(",")
-                : "220,200,255"
-        }, 0.7)`;
-
-    const numberOfStars = 70; // Adjust for more or fewer stars
-    const starColor =
-        getComputedStyle(document.documentElement)
-            .getPropertyValue("--complementary-color")
-            .trim() || "rgba(220, 220, 255, 0.7)";
-    const starGlowColor = `rgba(${
-        starColor.includes("rgba")
-            ? starColor.match(/\d+/g).slice(0, 3).join(",")
-            : "230,230,255"
-    }, 0.5)`;
-
-    for (let i = 0; i < numberOfStars; i++) {
+    const createStar = (variant) => {
         const star = document.createElement("div");
-        star.classList.add("star");
+        star.classList.add("star", `star--${variant}`);
 
-        // Random size for stars (e.g., 1px to 3px diameter)
-        const size = Math.random() * 4 + 4;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
+        const isFeatured = variant === "featured";
+        const { top, left } = pickPosition(isFeatured);
+        const falloff = dawnFalloff(top);
 
-        // Random position within the hero section
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
+        // Ambient stars are tiny; featured stars are a little larger.
+        const size = isFeatured ? randomBetween(4, 7) : randomBetween(1, 3);
 
-        // Random animation delay and duration for a more natural, less synchronized twinkle
-        star.style.animationDelay = `${Math.random() * 6}s`; // Stagger start times up to 5s
-        star.style.animationDuration = `${Math.random() * 3 + 4}s`; // Duration between 3s and 6s
+        // Timing: ambient stars twinkle on a short, varied cycle; featured
+        // stars twinkle less frequently on a much longer cycle. A negative
+        // delay starts each star part-way through its cycle so the field is
+        // desynchronized and never flashes at full brightness on load.
+        const duration = isFeatured
+            ? randomBetween(7, 12)
+            : randomBetween(3, 7);
+        const delay = -Math.random() * duration;
 
-        // Set star colors dynamically if you want to override CSS variables from JS
-        // or rely on the CSS variables (--star-color, --star-glow-color) defined above
-        // star.style.backgroundColor = starColor; // Example if you want to force color from JS
-        // star.style.boxShadow = `0 0 6px 1px ${starGlowColor}`; // Example
+        // Opacity and glow are scaled by vertical falloff so lower stars near
+        // the warm horizon are progressively dimmer and less glowy.
+        const rawBaseOpacity = isFeatured
+            ? randomBetween(0.15, 0.35)
+            : randomBetween(0.1, 0.35);
+        const rawPeakOpacity = isFeatured
+            ? randomBetween(0.85, 1)
+            : randomBetween(0.5, 0.9);
+        const rawGlow = isFeatured ? randomBetween(4, 7) : randomBetween(2, 4);
+        const rawGlowAlpha = isFeatured
+            ? randomBetween(0.5, 0.75)
+            : randomBetween(0.25, 0.5);
+        const baseOpacity = rawBaseOpacity * falloff;
+        const peakOpacity = rawPeakOpacity * (0.55 + 0.45 * falloff);
+        const glow = rawGlow * (0.6 + 0.4 * falloff);
+        const glowAlpha = rawGlowAlpha * falloff;
 
-        heroSection.appendChild(star);
+        star.style.setProperty("--star-top", `${top.toFixed(2)}%`);
+        star.style.setProperty("--star-left", `${left.toFixed(2)}%`);
+        star.style.setProperty("--star-size", `${size.toFixed(2)}px`);
+        star.style.setProperty("--star-duration", `${duration.toFixed(2)}s`);
+        star.style.setProperty("--star-delay", `${delay.toFixed(2)}s`);
+        star.style.setProperty("--star-base-opacity", baseOpacity.toFixed(2));
+        star.style.setProperty("--star-peak-opacity", peakOpacity.toFixed(2));
+        star.style.setProperty("--star-glow", `${glow.toFixed(1)}px`);
+        star.style.setProperty("--star-glow-alpha", glowAlpha.toFixed(2));
+
+        return star;
+    };
+
+    // Use a fragment so all stars are inserted in a single DOM write.
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < ambientCount; i++) {
+        fragment.appendChild(createStar("ambient"));
     }
+    for (let i = 0; i < featuredCount; i++) {
+        fragment.appendChild(createStar("featured"));
+    }
+    heroStarField.appendChild(fragment);
 }
-
-// --- Existing JavaScript for bar chart animations (if any specific JS logic beyond CSS) ---
-// Ensure these also respect visibility if needed, or rely on the .chart-card.is-visible
-// for their parent container to be visible first.
-// For example, the CSS animations for .simple-bar-chart .bar and .svg-bar-chart .bar-group rect
-// will play once their parent .chart-card.is-visible is animated.
-// You might not need extra JS observers for the bars themselves if the CSS is set up correctly.
-
-// Example: If you had JS observer for simple bars (now likely redundant if parent animates)
-// const simpleBars = document.querySelectorAll('.simple-bar-chart .bar');
-// if (simpleBars.length > 0) {
-//     const barObserver = new IntersectionObserver((entries, observer) => {
-//         entries.forEach(entry => {
-//             if (entry.isIntersecting && entry.target.closest('.chart-card.is-visible')) {
-//                 entry.target.style.animationPlayState = 'running';
-//                 observer.unobserve(entry.target);
-//             }
-//         });
-//     }, { threshold: 0.2 });
-//     simpleBars.forEach(bar => { /* barObserver.observe(bar); */ }); // Observe if needed
-// }
+// --- End of stargazing hero star field ---

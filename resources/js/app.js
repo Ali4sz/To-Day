@@ -1,11 +1,23 @@
 import "./bootstrap";
 import "./ui-interactions";
 import "./animations";
+import "./landing";
 
 document.addEventListener("DOMContentLoaded", () => {
     // --- Initialize UI components from ui-interactions.js ---
     if (window.initThemeToggle) window.initThemeToggle();
     if (window.initFooterYear) window.initFooterYear();
+
+    // --- Task-page initialization scope ---
+    // Everything below belongs to the authenticated task UI: SPA-style view
+    // switching, API wiring, task CRUD, and modals. None of these elements
+    // exist on the landing page, and running this code there previously
+    // caused missing-element errors and an api-base-url warning. Guarding on
+    // a task-only root element keeps landing/login/signup pages clean while
+    // leaving task-page behavior exactly as it was.
+    const isTaskPage =
+        document.querySelector(".tasks-page-content-wrapper") !== null;
+    if (!isTaskPage) return;
 
     const navLinks = document.querySelectorAll(".navbar-nav .nav-link");
     const views = document.querySelectorAll(".tasks-view");
