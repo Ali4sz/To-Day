@@ -44,7 +44,3 @@ This project was built using fundamental web technologies, with no external fram
 Distributed under the **Apache 2.0 License**. See `LICENSE.txt` for more information.
 
 ---
-
-## Contact
-
-Ali Samra - ali.mon.wo20@gmail.com
