@@ -1,7 +1,11 @@
 @import "tailwindcss";
+/* Shared layers import before the page files that compose them: dawn.css
+   declares base tokens (--hero-*) that consumers override, so it must lose
+   any equal-specificity source-order tie against auth.css / landing.css. */
+@import "./dawn.css";
 @import "./auth.css";
-@import "./tasks.css";
 @import "./landing.css";
+@import "./tasks.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -44,6 +48,38 @@ body {
     --shadow-medium: rgba(0, 0, 0, 0.12);
     --accent-gradient: linear-gradient(45deg, #d57a66, #e08f7d);
     --complementary-color-light: #e08f7d; /* Lighter terracotta for the hero accent */
+}
+
+/* Landing design-system palette, promoted from .landing-page so the auth
+   pages consume the same tokens. Values and comments moved verbatim;
+   layout tokens (--landing-container, --landing-navbar-height,
+   --landing-section-pad) stay page-scoped in landing.css. */
+:root {
+    /* Typography ink */
+    --landing-ink: #2c2440; /* deep indigo ink for headings */
+    --landing-ink-soft: #5c5170; /* muted indigo for body copy */
+
+    /* Sunrise surfaces */
+    --landing-surface-warm: #faf5ee; /* warm off-white product sections */
+    --landing-surface-sand: #f4ede2; /* slightly deeper warm band */
+    --landing-surface-cream: #fffdf9; /* card surfaces */
+
+    /* Brand accents */
+    --landing-indigo: #4a3f6e;
+    --landing-indigo-strong: #2c2648;
+    --landing-indigo-soft: #5d4e8c;
+    --landing-terracotta: #d57a66;
+    --landing-terracotta-ink: #b1543f; /* AA-safe terracotta for text on light */
+    --landing-peach: #e4a480;
+
+    /* Navigation */
+    --landing-nav-text: #e8e3f2;
+
+    /* Shared primitives */
+    --landing-border: rgba(74, 63, 110, 0.14);
+    --landing-shadow-soft: 0 6px 18px rgba(44, 36, 72, 0.06);
+    --landing-shadow-lift: 0 14px 34px rgba(44, 36, 72, 0.12);
+    --landing-radius: 14px;
 }
 
 /* Dark mode (optional, simple example) */
