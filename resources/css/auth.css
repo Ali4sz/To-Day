@@ -1,380 +1,345 @@
-/* --- Auth pages (login & signup) styles --- */
+/* --- Auth pages (login & signup) styles ---
+   Dark dawn-sky treatment: the shared scene (gradient, star field, ridges)
+   comes from dawn.css; this file owns the page chrome and the opaque cream
+   card (Option A) built on the promoted --landing-* palette (:root,
+   main.css). Every rule is namespaced under .auth-page / .auth-* so nothing
+   can leak into the task screens (which use raw .form-group markup).
+   Note on cascade: auth.css imports after dawn.css, so the equal-specificity
+   --hero-mountain-height override in the 640px block below wins by order —
+   this file composes the dawn layer, it never overrides its selectors. */
 
-body.dark-mode .login-page-body {
-    background-color: #232b30; /* Darker than navbar dark */
-    /* background: linear-gradient(135deg, #2c3e50 0%, #232b30 100%); */
-}
-
-body.dark-mode .login-card {
-    background-color: #34495e; /* Consistent with navbar dark */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-body.dark-mode .login-header .login-logo,
-body.dark-mode .login-header h2 {
-    color: #ecf0f1;
-}
-
-body.dark-mode .login-header p,
-body.dark-mode .login-form .form-group label,
-body.dark-mode .form-options .remember-me,
-body.dark-mode .login-footer {
-    color: #bdc3c7;
+/* --- Page surface --- */
+.auth-page {
+    background-color: var(--hero-sky-top); /* solid base behind the fixed sky; matches overscroll */
+    color: #f5f7fa; /* hero-light default for any bare text on the sky */
+    min-height: 100vh;
+    min-height: 100dvh; /* mobile browser chrome correctness */
+    color-scheme: dark; /* dark page chrome (scrollbars) matching the sky */
 }
 
-body.dark-mode .login-form .form-group input {
-    color: #ecf0f1;
-    border-bottom-color: #566573;
+/* --- Error tone (Rose, harmonized with the terracotta accent but
+       unmistakably distinct from it; AA-verified ≥ 4.5:1 on the cream card) --- */
+.auth-page {
+    --auth-error: #a61e32;
+    --auth-error-bg: rgba(166, 30, 50, 0.08);
+    --auth-error-border: rgba(166, 30, 50, 0.25);
 }
 
-body.dark-mode .login-form .form-group input:focus,
-body.dark-mode .login-form .form-group input:valid {
-    border-bottom-color: var(--complementary-color);
-}
-
-body.dark-mode .login-form .form-group input:focus + label,
-body.dark-mode .login-form .form-group input:valid + label {
-    color: var(--complementary-color);
-}
-body.dark-mode .login-form .form-group .icon {
-    color: #7f8c8d;
-}
-body.dark-mode .login-form .form-group input:focus + label .icon,
-body.dark-mode .login-form .form-group input:valid + label .icon {
-    color: var(--complementary-color);
-}
-
-/* Dark Mode for Error Messages */
-body.dark-mode .form-error-message {
-    color: #f8d7da; /* Lighter text for dark background */
-    background-color: #523030; /* Darker, desaturated red background */
-    border-color: #843534; /* Slightly darker border for dark mode */
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* Slightly adjusted shadow for dark bg */
-}
-
-.signup-form {
+/* --- Content layout (neutralizes the global `main` demo rule:
+       main { padding: 40px 50px; text-align: center; min-height: 30vh }) --- */
+.auth-main {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    padding: 56px 24px 84px; /* room to scroll clear of the ridge band */
+    text-align: center;
     display: flex;
     flex-direction: column;
-}
-
-/* Login Page Specific Styles */
-.login-page-body {
-    display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    background-color: #f0f2f5; /* A very light neutral background */
-    /* Or use a subtle gradient like:
-    background: linear-gradient(135deg, #f4f7f6 0%, #e9edf0 100%); */
-    overflow: hidden; /* For background shapes */
-    position: relative; /* For background shapes */
+    gap: 30px;
+    position: relative;
+    z-index: 1; /* content scrolls above the fixed backdrop */
 }
 
-/* Abstract Background Shapes */
-.shape-blob {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.15;
-    filter: blur(50px); /* Soft blur */
-    animation: moveBlob 20s infinite alternate ease-in-out;
-    z-index: 0;
+/* Logo above the card, on the dark sky — reuses the landing logo classes
+   (light text + peach accent); only sizing/positioning is local. */
+.auth-logo {
+    display: inline-block;
+    font-size: 2.4rem;
+    line-height: 1;
 }
 
-.shape-blob.one {
-    width: 400px;
-    height: 400px;
-    background-color: var(--complementary-color);
-    top: -100px;
-    left: -150px;
-    animation-duration: 25s;
-}
-
-.shape-blob.two {
-    width: 500px;
-    height: 500px;
-    background-color: #a7c5eb; /* A soft blue, complementary to terracotta */
-    bottom: -150px;
-    right: -200px;
-    animation-duration: 30s;
-    animation-delay: -5s;
-}
-.shape-blob.three {
-    width: 300px;
-    height: 300px;
-    background-color: #f0dbaf; /* A soft warm yellow */
-    top: 50%;
-    left: 40%;
-    transform: translate(-50%, -50%);
-    animation-duration: 20s;
-    animation-delay: -10s;
-    opacity: 0.1;
-}
-
-@keyframes moveBlob {
-    0% {
-        transform: scale(1) translate(0px, 0px);
-    }
-    50% {
-        transform: scale(1.2) translate(50px, -30px);
-    }
-    100% {
-        transform: scale(1) translate(-20px, 30px);
-    }
-}
-
-.login-container {
-    position: relative; /* To keep content above blobs */
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.login-card {
-    background-color: var(--primary-color); /* White */
-    padding: 40px 45px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+/* --- Card --- */
+.auth-card {
+    color-scheme: light; /* cream surface: native controls render light */
+    background: var(--landing-surface-cream);
+    color: var(--landing-ink);
+    border: 1px solid var(--landing-border);
+    border-radius: var(--landing-radius);
+    box-shadow:
+        var(--landing-shadow-lift),
+        0 30px 80px rgba(9, 10, 26, 0.45); /* deep umbra against the night sky */
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
+    padding: 42px 44px 38px;
     text-align: center;
-    animation: fadeInScaleUp 0.7s ease-out forwards;
+    animation: auth-card-enter 0.65s ease-out forwards;
     opacity: 0;
-    transform: scale(0.95) translateY(20px);
+    transform: translateY(18px) scale(0.98);
 }
 
-.signup-card {
-    background-color: var(--primary-color); /* White */
-    padding: 40px 45px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    animation: fadeInScaleUp 0.7s ease-out forwards;
-    opacity: 0;
-    transform: scale(0.95) translateY(20px);
-    padding: 40px 45px;
-    max-width: 420px; /* Example: slightly wider for more fields */
-}
-
-@keyframes fadeInScaleUp {
+@keyframes auth-card-enter {
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: none;
     }
 }
 
-.login-header .login-logo {
-    text-decoration: none;
-    font-size: 2.8em;
-    font-weight: 700;
-    color: var(--text-dark);
-    display: inline-block;
-    margin-bottom: 10px;
+/* Without this, reduced motion would freeze the card in its hidden
+   pre-animation state — the entrance is decorative, never a gate. */
+@media (prefers-reduced-motion: reduce) {
+    .auth-card {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
 }
 
-.login-header .login-logo .logo-accent {
-    font-family: "Pacifico", cursive;
-    color: var(--complementary-color);
-    font-weight: 400;
-    margin-left: -5px;
+.auth-card-header {
+    margin-bottom: 30px;
 }
 
-.login-header h2 {
-    font-size: 1.8em;
-    color: var(--text-dark);
-    margin-bottom: 8px;
+.auth-card-title {
+    font-size: 1.65rem;
     font-weight: 600;
+    color: var(--landing-ink);
+    margin-bottom: 8px;
 }
 
-.login-header p {
-    font-size: 0.95em;
-    color: #666;
-    margin-bottom: 30px;
+.auth-card-subtitle {
+    font-size: 0.95rem;
+    color: var(--landing-ink-soft);
 }
 
-.login-form .form-group {
+/* --- Form fields (floating label + animated underline) ---
+   Label rise is driven by :focus and :not(:placeholder-shown) —
+   the component always renders placeholder=" " to make that possible. */
+.auth-form {
+    text-align: left;
+}
+
+.auth-form .form-group {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 26px;
 }
 
-.login-form .form-group .icon {
+.auth-form .form-group .icon {
     margin-right: 8px;
-    color: #aaa;
+    color: #9a92ae;
     transition: color 0.3s ease;
 }
 
-.login-form .form-group input {
+.auth-form .form-group input {
     width: 100%;
-    padding: 12px 12px 12px 10px; /* Make space for icon if placing inside */
+    padding: 12px 4px 10px;
     border: none;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--landing-border);
+    border-radius: 0;
     background-color: transparent;
+    font-family: inherit;
     font-size: 1em;
-    color: var(--text-dark);
+    color: var(--landing-ink);
     outline: none;
     transition: border-color 0.3s ease;
-    position: relative;
-    z-index: 1; /* Above label initially */
 }
 
-.login-form .form-group label {
+.auth-form .form-group label {
     position: absolute;
     top: 12px;
-    left: 0px; /* Align with input padding */
+    left: 4px;
     font-size: 1em;
-    color: #999;
+    color: var(--landing-ink-soft);
     pointer-events: none;
     transition: all 0.3s ease;
-    z-index: 0; /* Below input initially */
 }
 
-.login-form .form-group input:focus,
-.login-form .form-group input:valid {
-    /* :valid works if 'required' is present */
-    border-bottom-color: var(--complementary-color);
+.auth-form .form-group input:focus,
+.auth-form .form-group input:not(:placeholder-shown) {
+    border-bottom-color: var(--landing-terracotta);
 }
 
-.login-form .form-group input:focus + label,
-.login-form .form-group input:valid + label {
-    top: -18px;
-    left: 0;
+.auth-form .form-group input:focus + label,
+.auth-form .form-group input:not(:placeholder-shown) + label,
+.auth-form .form-group input:-webkit-autofill + label {
+    top: -13px;
     font-size: 0.8em;
-    color: var(--complementary-color);
-}
-.login-form .form-group input:focus + label .icon,
-.login-form .form-group input:valid + label .icon {
-    color: var(--complementary-color);
+    color: var(--landing-terracotta-ink); /* AA-safe accent for text on cream */
 }
 
-/* Optional input line animation */
-.input-line {
+.auth-form .form-group input:focus + label .icon,
+.auth-form .form-group input:not(:placeholder-shown) + label .icon {
+    color: var(--landing-terracotta-ink);
+}
+
+/* Growing accent line under the focused field */
+.auth-form .form-group .input-line {
     position: absolute;
     bottom: 0;
     left: 0;
     height: 2px;
     width: 0;
-    background-color: var(--complementary-color);
+    background-color: var(--landing-terracotta);
     transition: width 0.3s ease;
 }
-.login-form .form-group input:focus ~ .input-line,
-.login-form .form-group input:valid ~ .input-line {
+
+.auth-form .form-group input:focus ~ .input-line {
     width: 100%;
 }
-/* Form Error Message Styling */
-.form-error-message {
-    display: block; /* Ensure it takes its own line */
-    padding: 12px 18px; /* Good padding */
-    margin-top: 5px; /* Space from the element above (if any) */
-    margin-bottom: 15px; /* Space from the element below */
-    font-family: "Poppins", sans-serif;
-    font-size: 0.9em; /* Slightly smaller than regular text but readable */
-    font-weight: 500; /* Slightly bolder to draw attention */
-    line-height: 1.4;
-    color: #721c24; /* A standard dark red for error text */
-    background-color: #f8d7da; /* A light pink/red background */
-    border: 1px solid #f5c6cb; /* A slightly darker pink/red border */
-    border-radius: 8px; /* Consistent with other rounded corners */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-    text-align: left; /* Default, but good to be explicit */
+
+/* Invalid fields: rose baseline instead of the accent */
+.auth-form .form-group.form-group--error input {
+    border-bottom-color: var(--auth-error);
 }
-.form-options {
+
+/* --- Browser autofill: defeat the light-blue paint that a dark page makes
+       conspicuous. Cuisine: inset shadow floods the background with cream,
+       text-fill restores ink, long transition hides the native color swap. --- */
+.auth-form .form-group input:-webkit-autofill,
+.auth-form .form-group input:-webkit-autofill:hover,
+.auth-form .form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--landing-surface-cream) inset;
+    -webkit-text-fill-color: var(--landing-ink);
+    caret-color: var(--landing-ink);
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+/* --- Validation messages --- */
+.auth-form .form-error-message {
+    display: block;
+    padding: 11px 16px;
+    margin: -12px 0 20px; /* tuck up under its field */
+    font-size: 0.88em;
+    font-weight: 500;
+    line-height: 1.45;
+    text-align: left;
+    color: var(--auth-error);
+    background-color: var(--auth-error-bg);
+    border: 1px solid var(--auth-error-border);
+    border-radius: var(--landing-radius);
+}
+
+/* --- Meta row (remember me / forgot / terms) --- */
+.auth-form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    font-size: 0.9em;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 4px 0 28px;
+    font-size: 0.92em;
 }
 
-.remember-me {
-    color: #555;
+.auth-terms {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 0.85em;
+}
+
+.auth-remember {
+    color: var(--landing-ink-soft);
     display: flex;
     align-items: center;
+    gap: 8px;
+    line-height: 1.4;
     cursor: pointer;
 }
-.remember-me input[type="checkbox"] {
-    margin-right: 8px;
-    accent-color: var(--complementary-color); /* Modern way to color checkbox */
+
+.auth-remember input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    margin: 0;
+    accent-color: var(--landing-terracotta);
+    cursor: pointer;
 }
 
-.forgot-password {
-    color: var(--complementary-color);
+.auth-inline-link {
+    color: var(--landing-terracotta-ink);
+    font-weight: 600;
     text-decoration: none;
-    transition: color 0.3s ease;
-    margin-left: 10px;
+    transition: color 0.25s ease;
 }
-.forgot-password:hover {
-    color: var(--complementary-hover);
+
+.auth-inline-link:hover {
+    color: #8f4130; /* deeper terracotta for hover on cream */
     text-decoration: underline;
 }
 
-.login-button {
+/* --- Submit button — the landing CTA gradient, form-sized.
+       Higher-specificity pair (.auth-form .cta-button) so these always win
+       over the .cta-button defaults regardless of file import order. --- */
+.auth-form .cta-button.auth-submit {
     width: 100%;
-    padding: 14px;
-    background: var(--accent-gradient);
-    color: var(--text-light);
+    padding: 16px 32px;
     border: none;
-    border-radius: 8px;
+    border-radius: 50px;
+    font-family: inherit;
     font-size: 1.1em;
-    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(213, 122, 102, 0.3);
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.login-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(213, 122, 102, 0.4);
-}
-.login-button .fa-arrow-right {
+.auth-submit .fa-arrow-right {
     margin-left: 10px;
     transition: transform 0.3s ease;
 }
-.login-button:hover .fa-arrow-right {
+
+.auth-submit:hover .fa-arrow-right {
     transform: translateX(5px);
 }
 
-.login-footer {
-    margin-top: 30px;
-    font-size: 0.9em;
-    color: #555;
+/* --- Card footer --- */
+.auth-card-footer {
+    margin-top: 26px;
+    font-size: 0.92em;
+    text-align: center;
+    color: var(--landing-ink-soft);
 }
 
-.login-footer .signup-link {
-    color: var(--complementary-color);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.3s ease;
+/* --- Visible keyboard focus on both backdrops:
+       peach ring on the dark sky (mirrors the landing hero), darker
+       terracotta ring on the cream card. --- */
+.auth-page a:focus-visible,
+.auth-page button:focus-visible,
+.auth-page input[type="checkbox"]:focus-visible {
+    outline: 3px solid rgba(177, 84, 63, 0.85);
+    outline-offset: 3px;
 }
 
-.login-footer .signup-link:hover {
-    color: var(--complementary-hover);
-    text-decoration: underline;
+.auth-page .auth-logo:focus-visible {
+    outline-color: rgba(224, 143, 125, 0.9); /* peach, legible on the sky */
 }
 
-/* Specific styling for the terms and agreement section if needed */
-.terms-agreement {
-    text-align: left; /* Align text to the left for readability */
-    margin-bottom: 25px; /* Adjust spacing */
-    font-size: 0.85em;
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    .auth-page {
+        --hero-mountain-height: clamp(90px, 18vh, 170px); /* mirrors the hero's mobile scene */
+    }
+
+    .auth-main {
+        padding: 32px 16px 64px;
+        gap: 22px;
+    }
+
+    .auth-logo {
+        font-size: 2.1rem;
+    }
+
+    .auth-card {
+        padding: 32px 24px 28px;
+    }
+
+    .auth-form .cta-button.auth-submit {
+        padding: 15px 28px;
+        font-size: 1.05em;
+    }
 }
 
-.terms-agreement .remember-me {
-    /* Reusing class name here, but context is terms */
-    line-height: 1.4;
-}
+/* Very small phones */
+@media (max-width: 380px) {
+    .auth-main {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
 
-.inline-link {
-    color: var(--complementary-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-.inline-link:hover {
-    text-decoration: underline;
-    color: var(--complementary-hover);
+    .auth-card {
+        padding: 28px 20px 26px;
+    }
+
+    .auth-card-title {
+        font-size: 1.45rem;
+    }
 }
